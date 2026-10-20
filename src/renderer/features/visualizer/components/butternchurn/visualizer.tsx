@@ -2,14 +2,15 @@ import { createRef, useCallback, useEffect, useRef, useState } from 'react';
 
 import styles from './visualizer.module.css';
 
+import { useVisualizerPlaybackType } from '/@/renderer/features/player/hooks/use-visualizer-playback-type';
 import { useWebAudio } from '/@/renderer/features/player/hooks/use-webaudio';
 import { getVisualizerAudioNodes } from '/@/renderer/features/player/utils/get-visualizer-audio-nodes';
 import { openVisualizerSettingsModal } from '/@/renderer/features/player/utils/open-visualizer-settings-modal';
+import { togglePopoutFullscreen } from '/@/renderer/features/player/utils/toggle-popout-fullscreen';
 import { ComponentErrorBoundary } from '/@/renderer/features/shared/components/component-error-boundary';
 import {
     subscribeButterchurnPreset,
     useButterchurnSettings,
-    usePlaybackType,
     useSettingsStore,
     useSettingsStoreActions,
 } from '/@/renderer/store';
@@ -22,6 +23,7 @@ import { ActionIcon } from '/@/shared/components/action-icon/action-icon';
 import { Group } from '/@/shared/components/group/group';
 import { Text } from '/@/shared/components/text/text';
 import { PlayerStatus, PlayerType } from '/@/shared/types/types';
+import { IS_POPOUT } from '/@/shared/utils/is-popout';
 
 // Ignore presets that are erroring out
 const IGNORED_PRESETS = ['Flexi + Martin - astral projection'];
@@ -83,7 +85,7 @@ const VisualizerInner = () => {
     const initialPresetLoadedRef = useRef(false);
     const butterchurnSettings = useButterchurnSettings();
     const opacity = useSettingsStore((store) => store.visualizer.butterchurn.opacity);
-    const playbackType = usePlaybackType();
+    const playbackType = useVisualizerPlaybackType();
     const { setSettings } = useSettingsStoreActions();
     const playerStatus = usePlayerStatus();
     const isPlaying = playerStatus === PlayerStatus.PLAYING;
@@ -600,6 +602,11 @@ export const Visualizer = () => {
     ]);
 
     const handleToggleFullscreen = () => {
+        if (IS_POPOUT) {
+            togglePopoutFullscreen();
+            return;
+        }
+
         if (visualizerExpanded) {
             setStore({
                 expanded: visualizerReturnToPlayer,

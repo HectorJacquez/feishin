@@ -17,6 +17,7 @@ export type FullScreenPlayerTitleDisplayType = 'multiLine' | 'scroll';
 
 interface FullScreenPlayerState {
     activeTab: 'lyrics' | 'queue' | 'related' | string;
+    canvasExpanded: boolean;
     coverArtSize: number;
     dynamicBackground?: boolean;
     dynamicImageBlur: number;
@@ -28,6 +29,7 @@ interface FullScreenPlayerState {
     titleLineCount: number;
     useImageAspectRatio: boolean;
     visualizerExpanded: boolean;
+    visualizerLyricsOverlay: boolean;
     visualizerReturnToPlayer: boolean;
 }
 
@@ -41,6 +43,7 @@ export const useFullScreenPlayerStore = createWithEqualityFn<FullScreenPlayerSli
                     },
                 },
                 activeTab: '',
+                canvasExpanded: false,
                 coverArtSize: 75,
                 dynamicBackground: true,
                 dynamicImageBlur: 6,
@@ -52,6 +55,7 @@ export const useFullScreenPlayerStore = createWithEqualityFn<FullScreenPlayerSli
                 titleLineCount: 1,
                 useImageAspectRatio: false,
                 visualizerExpanded: false,
+                visualizerLyricsOverlay: false,
                 visualizerReturnToPlayer: false,
             })),
             { name: 'store_full_screen_player' },
@@ -99,6 +103,7 @@ export const useSetFullScreenPlayerStore = () =>
 export const useFullScreenPlayerOverlayState = () =>
     useFullScreenPlayerStore(
         (state) => ({
+            canvasExpanded: state.canvasExpanded,
             expanded: state.expanded,
             visualizerExpanded: state.visualizerExpanded,
         }),

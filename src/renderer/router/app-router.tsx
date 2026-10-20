@@ -202,7 +202,7 @@ const FullScreenPlayerSettingsContextModal = (props: any) => (
     </Suspense>
 );
 
-const appRouterModals = {
+export const appRouterModals = {
     addToPlaylist: AddToPlaylistContextModal,
     base: BaseContextModal,
     editMetadata: SongEditContextModal,

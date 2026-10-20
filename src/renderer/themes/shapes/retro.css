@@ -1,0 +1,301 @@
+/* stylelint-disable selector-class-pattern -- Mantine's own class names are the hooks here */
+
+/*
+  Retro CRT shape pack, values verbatim from the site's theme.py
+  UIS["Retro CRT"] (cashy/shape-styles/retro-crt.css), selectors remapped
+  onto Feishin. Scanlines are NOT part of this pack: they are a separate
+  toggle (crt-scanlines.css) that rides on any shape.
+
+  Site variables -> Feishin: --line = rgba(255,255,255,.09) constant, --a = primary,
+  --bg = background.
+*/
+:root[data-shape='retro'] {
+    /* --line is a fixed faint white overlay on the site, not palette-derived,
+       so a light palette must not darken it. */
+    --shape-line: rgb(255 255 255 / 9%);
+}
+
+/* button, select, input, textarea { border-radius: 0 } */
+:root[data-shape='retro'] .mantine-Button-root,
+:root[data-shape='retro'] .mantine-ActionIcon-root,
+:root[data-shape='retro'] .mantine-TextInput-input,
+:root[data-shape='retro'] .mantine-Select-input,
+:root[data-shape='retro'] .mantine-NumberInput-input,
+:root[data-shape='retro'] .mantine-Textarea-input,
+:root[data-shape='retro'] .mantine-Tabs-tab,
+:root[data-shape='retro'] .mantine-Badge-root {
+    border-radius: 0 !important;
+}
+
+/* button { border: 2px solid var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,.5) } */
+:root[data-shape='retro'] .mantine-Button-root[data-variant='filled'],
+:root[data-shape='retro'] .mantine-Button-root[data-variant='default'] {
+    border: 2px solid var(--shape-line) !important;
+    box-shadow: 3px 3px 0 rgb(0 0 0 / 50%);
+}
+
+:root[data-shape='retro'] .mantine-Button-root[data-variant='filled']:active,
+:root[data-shape='retro'] .mantine-Button-root[data-variant='default']:active {
+    box-shadow: 1px 1px 0 rgb(0 0 0 / 50%);
+    transform: translate(2px, 2px);
+}
+
+/* .job, .card, .clip, .msg, .item, .set, .note, .bar, .tr, .pbox { border-radius: 0 } */
+:root[data-shape='retro'] .mantine-Paper-root,
+:root[data-shape='retro'] .mantine-Modal-content,
+:root[data-shape='retro'] .mantine-Menu-dropdown,
+:root[data-shape='retro'] .mantine-Popover-dropdown,
+:root[data-shape='retro'] .mantine-HoverCard-dropdown,
+:root[data-shape='retro'] .mantine-Notification-root,
+:root[data-shape='retro'] .mantine-Slider-bar,
+:root[data-shape='retro'] .mantine-Slider-track,
+:root[data-shape='retro'] img,
+:root[data-shape='retro'] .mantine-Image-root {
+    border-radius: 0 !important;
+}
+
+/* .job, .card, .clip, .msg { box-shadow: 4px 4px 0 rgba(0,0,0,.4) } */
+:root[data-shape='retro'] .mantine-Paper-root,
+:root[data-shape='retro'] .mantine-Modal-content,
+:root[data-shape='retro'] .mantine-Notification-root {
+    box-shadow: 4px 4px 0 rgb(0 0 0 / 40%);
+}
+
+/* a { underline, offset 3px } ::selection { background: var(--a); color: var(--bg) } */
+:root[data-shape='retro'] a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+:root[data-shape='retro'] ::selection {
+    color: var(--theme-colors-background);
+    background: var(--theme-colors-primary);
+}
+
+/* .nav a, .navtop { radius 0; border 1px var(--line) } hover: 2px 2px 0 rgba(0,0,0,.55) */
+:root[data-shape='retro'] #sidebar a,
+:root[data-shape='retro'] #sidebar .mantine-NavLink-root {
+    border: 1px solid var(--shape-line) !important;
+    border-radius: 0 !important;
+}
+
+:root[data-shape='retro'] #sidebar a:hover,
+:root[data-shape='retro'] #sidebar .mantine-NavLink-root:hover {
+    box-shadow: 2px 2px 0 rgb(0 0 0 / 55%);
+}
+
+/* .navmenu { radius 0; border 2px var(--line); shadow 6px 6px 0 rgba(0,0,0,.5) }; items bare */
+:root[data-shape='retro'] .mantine-Menu-dropdown,
+:root[data-shape='retro'] .mantine-Popover-dropdown,
+:root[data-shape='retro'] .mantine-HoverCard-dropdown {
+    border: 2px solid var(--shape-line) !important;
+    box-shadow: 6px 6px 0 rgb(0 0 0 / 50%) !important;
+}
+
+:root[data-shape='retro'] .mantine-Menu-item {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ---------------------------------------------------------------------
+   Beyond the sidebar: the same site rules carried onto Feishin's own
+   surfaces. Class hooks are the build's deterministic CSS-module names
+   (fs-<file>-module-<class>, see electron.vite.config.ts).
+   --------------------------------------------------------------------- */
+
+/* Full-screen player tab strip (Up Next / Related / Lyrics / ...): each
+   tab a .nav a block, the underline a solid bar. */
+:root[data-shape='retro'] .full-screen-player-queue-header .mantine-Button-root {
+    margin: 0 3px;
+    border: 1px solid var(--shape-line) !important;
+    border-radius: 0 !important;
+}
+
+:root[data-shape='retro'] .full-screen-player-queue-header .mantine-Button-root:hover {
+    box-shadow: 2px 2px 0 rgb(0 0 0 / 55%);
+}
+
+:root[data-shape='retro'] .fs-full-screen-player-queue-module-active-tab-indicator {
+    height: 3px;
+}
+
+/* The panel behind the tabs is a .card. */
+:root[data-shape='retro'] .fs-full-screen-player-queue-module-grid-container::before {
+    border: 2px solid var(--shape-line);
+    border-radius: 0;
+    box-shadow: 4px 4px 0 rgb(0 0 0 / 40%);
+}
+
+/* Icon buttons over the full-screen player (minimize, configure, expand). */
+:root[data-shape='retro'] .fs-full-screen-player-module-controls-container .mantine-ActionIcon-root,
+:root[data-shape='retro'] .fs-full-screen-visualizer-module-controls-container .mantine-ActionIcon-root,
+:root[data-shape='retro'] .fs-full-screen-canvas-module-icon-group .mantine-ActionIcon-root {
+    border: 1px solid var(--shape-line) !important;
+}
+
+:root[data-shape='retro'] .fs-full-screen-player-module-controls-container .mantine-ActionIcon-root:hover,
+:root[data-shape='retro'] .fs-full-screen-visualizer-module-controls-container .mantine-ActionIcon-root:hover,
+:root[data-shape='retro'] .fs-full-screen-canvas-module-icon-group .mantine-ActionIcon-root:hover {
+    box-shadow: 2px 2px 0 rgb(0 0 0 / 55%);
+}
+
+:root[data-shape='retro'] .fs-full-screen-canvas-module-container,
+:root[data-shape='retro'] .fs-full-screen-player-image-module-metadata-container {
+    border-radius: 0;
+}
+
+:root[data-shape='retro'] .fs-full-screen-canvas-module-container {
+    border: 2px solid var(--shape-line);
+}
+
+/* Player bar: ruled off with the line, the play button a real button. */
+:root[data-shape='retro'] #player-bar {
+    border-top: 2px solid var(--shape-line);
+}
+
+:root[data-shape='retro'] .fs-player-button-module-main {
+    border: 2px solid var(--shape-line) !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 rgb(0 0 0 / 50%);
+}
+
+:root[data-shape='retro'] .fs-player-button-module-main:active {
+    box-shadow: 1px 1px 0 rgb(0 0 0 / 50%);
+    transform: translate(2px, 2px);
+}
+
+:root[data-shape='retro'] .mantine-Slider-thumb {
+    border-radius: 0 !important;
+}
+
+/* Library page play buttons (the big white disc, and the pill variants). */
+:root[data-shape='retro'] .fs-play-button-module-play-button,
+:root[data-shape='retro'] .fs-play-button-module-play-button::before,
+:root[data-shape='retro'] .fs-play-button-module-text-button,
+:root[data-shape='retro'] .fs-play-button-module-wide-text-button {
+    border-radius: 0 !important;
+}
+
+:root[data-shape='retro'] .fs-play-button-module-play-button {
+    border: 2px solid var(--shape-line) !important;
+    box-shadow: 3px 3px 0 rgb(0 0 0 / 50%);
+}
+
+/* Grid cards are .card: square, hard shadow. The row wrapper clips its
+   contents, which would eat the shadow, so it is opened up. */
+:root[data-shape='retro'] .fs-item-card-module-container {
+    border-radius: 0;
+    box-shadow: 4px 4px 0 rgb(0 0 0 / 40%);
+}
+
+/* Same text inset as aero, tighter: square corners waste no space, the
+   labels just must not touch the card edge the shadow makes visible. */
+:root[data-shape='retro'] .fs-item-card-module-detail-container {
+    padding-right: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+}
+
+:root[data-shape='retro'] .fs-item-card-module-image-container {
+    border-radius: 0;
+}
+
+:root[data-shape='retro'] .fs-item-grid-list-module-item-row {
+    overflow: visible;
+}
+
+/* Page header, filter bar, queue sidebar: ruled with the line. */
+:root[data-shape='retro'] .fs-page-header-module-container,
+:root[data-shape='retro'] .fs-filter-bar-module-filter-bar {
+    border-bottom: 2px solid var(--shape-line);
+}
+
+:root[data-shape='retro'] #sidebar-queue {
+    border-left: 2px solid var(--shape-line);
+}
+
+:root[data-shape='retro'] .fs-sidebar-module-accordion-control,
+:root[data-shape='retro'] .mantine-Accordion-control {
+    border-radius: 0 !important;
+}
+
+/* Settings tabs: the active one carries a heavier rule. */
+:root[data-shape='retro'] .mantine-Tabs-tab[data-active] {
+    border-bottom-width: 3px;
+}
+
+/* ---------------------------------------------------------------------
+   Surfaces the first pass missed (2026-09-07).
+   --------------------------------------------------------------------- */
+
+/* The right-click menu (play next, play last, add to playlist) is a Radix
+   context menu, not a Mantine one, so every .mantine-*-dropdown rule above
+   slid past it and it kept the stock border and corners while the rest of
+   the app changed. Same chrome as the dropdowns; one hook covers the
+   submenu too, which renders with the same class. */
+:root[data-shape='retro'] .fs-context-menu-module-content {
+    border: 2px solid var(--shape-line) !important;
+    border-radius: 0 !important;
+    box-shadow: 6px 6px 0 rgb(0 0 0 / 50%) !important;
+}
+
+:root[data-shape='retro'] .fs-context-menu-module-item {
+    border-radius: 0 !important;
+}
+
+:root[data-shape='retro'] .fs-context-menu-module-divider {
+    border-top-color: var(--shape-line);
+}
+
+/* Playlist rows in the left sidebar. The packs put a frame and a hover
+   block behind these rows, and at the stock padding the text sits hard
+   against it. Two knobs: the vertical padding inside a row, and a hair of
+   space between rows so the frames read as separate. */
+:root[data-shape='retro'] .fs-sidebar-playlist-list-module-row-compact,
+:root[data-shape='retro'] .fs-playlist-folder-tree-module-nav-folder,
+:root[data-shape='retro'] .fs-playlist-folder-tree-module-header {
+    padding-top: var(--theme-spacing-md);
+    padding-bottom: var(--theme-spacing-md);
+    margin-bottom: 2px;
+}
+
+:root[data-shape='retro'] .fs-sidebar-playlist-list-module-row-group {
+    padding-top: var(--theme-spacing-sm);
+    padding-bottom: var(--theme-spacing-sm);
+}
+
+/* Popover dropdowns, the player's playback-style and speed panel among
+   them: the packs draw a heavier border than the stock one, and the
+   dropdown's own sm padding left the labels touching it. */
+:root[data-shape='retro'] .fs-popover-module-dropdown {
+    padding: var(--theme-spacing-md);
+}
+
+/* The hover controls on a playlist row (play, play next, play last) sit in
+   their own panel, and the tooltip above them is a Mantine tooltip: neither
+   is a dropdown, so both kept stock corners over a themed sidebar. */
+:root[data-shape='retro'] .fs-sidebar-playlist-list-module-controls,
+:root[data-shape='retro'] .fs-sidebar-playlist-list-module-controls-compact {
+    padding: 2px 4px;
+    border: 2px solid var(--shape-line);
+    border-radius: 0;
+    box-shadow: 3px 3px 0 rgb(0 0 0 / 50%);
+}
+
+:root[data-shape='retro'] .mantine-Tooltip-tooltip {
+    border: 2px solid var(--shape-line);
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 rgb(0 0 0 / 50%);
+}
+
+/* The hover bar as a whole. Retro's idiom IS the hard edge, so the bar
+   reads as one framed block: no rounding, but the buttons get the line
+   between them instead of floating on a bare grey panel. */
+:root[data-shape='retro'] .fs-item-row-play-controls-module-controls {
+    gap: 0;
+}
+
+:root[data-shape='retro'] .fs-item-row-play-controls-module-controls .mantine-ActionIcon-root {
+    border: 1px solid var(--shape-line) !important;
+    border-radius: 0 !important;
+}

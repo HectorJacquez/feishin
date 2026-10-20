@@ -18,6 +18,19 @@ import { githubLight } from '/@/shared/themes/github-light/github-light';
 import { glassyDark } from '/@/shared/themes/glassy-dark/glassy-dark';
 import { gruvboxDark } from '/@/shared/themes/gruvbox-dark/gruvbox-dark';
 import { gruvboxLight } from '/@/shared/themes/gruvbox-light/gruvbox-light';
+// hedgy-themes:imports:start
+import { hedgyAeroSky } from '/@/shared/themes/hedgy-aero-sky/hedgy-aero-sky';
+import { hedgyArcadeAmber } from '/@/shared/themes/hedgy-arcade-amber/hedgy-arcade-amber';
+import { hedgyDeepSea } from '/@/shared/themes/hedgy-deep-sea/hedgy-deep-sea';
+import { hedgyEmber } from '/@/shared/themes/hedgy-ember/hedgy-ember';
+import { hedgyForest } from '/@/shared/themes/hedgy-forest/hedgy-forest';
+import { hedgyGameBoyDmg } from '/@/shared/themes/hedgy-game-boy-dmg/hedgy-game-boy-dmg';
+import { hedgyGbLight } from '/@/shared/themes/hedgy-gb-light/hedgy-gb-light';
+import { hedgyGbPocket } from '/@/shared/themes/hedgy-gb-pocket/hedgy-gb-pocket';
+import { hedgyGbcGrape } from '/@/shared/themes/hedgy-gbc-grape/hedgy-gbc-grape';
+import { hedgyMidnight } from '/@/shared/themes/hedgy-midnight/hedgy-midnight';
+import { hedgyMono } from '/@/shared/themes/hedgy-mono/hedgy-mono';
+import { hedgyPaperLight } from '/@/shared/themes/hedgy-paper-light/hedgy-paper-light';
 import { highContrastDark } from '/@/shared/themes/high-contrast-dark/high-contrast-dark';
 import { highContrastLight } from '/@/shared/themes/high-contrast-light/high-contrast-light';
 import { materialDark } from '/@/shared/themes/material-dark/material-dark';
@@ -36,6 +49,7 @@ import { tokyoNight } from '/@/shared/themes/tokyo-night/tokyo-night';
 import { vscodeDarkPlus } from '/@/shared/themes/vscode-dark-plus/vscode-dark-plus';
 import { vscodeLightPlus } from '/@/shared/themes/vscode-light-plus/vscode-light-plus';
 import { zenburn } from '/@/shared/themes/zenburn/zenburn';
+// hedgy-themes:imports:end
 
 export const appTheme: Record<AppTheme, AppThemeConfiguration> = {
     [AppTheme.AYU_DARK]: ayuDark,
@@ -52,6 +66,19 @@ export const appTheme: Record<AppTheme, AppThemeConfiguration> = {
     [AppTheme.GLASSY_DARK]: glassyDark,
     [AppTheme.GRUVBOX_DARK]: gruvboxDark,
     [AppTheme.GRUVBOX_LIGHT]: gruvboxLight,
+    // hedgy-themes:map:start
+    [AppTheme.HEDGY_AERO_SKY]: hedgyAeroSky,
+    [AppTheme.HEDGY_ARCADE_AMBER]: hedgyArcadeAmber,
+    [AppTheme.HEDGY_DEEP_SEA]: hedgyDeepSea,
+    [AppTheme.HEDGY_EMBER]: hedgyEmber,
+    [AppTheme.HEDGY_FOREST]: hedgyForest,
+    [AppTheme.HEDGY_GAME_BOY_DMG]: hedgyGameBoyDmg,
+    [AppTheme.HEDGY_GB_LIGHT]: hedgyGbLight,
+    [AppTheme.HEDGY_GB_POCKET]: hedgyGbPocket,
+    [AppTheme.HEDGY_GBC_GRAPE]: hedgyGbcGrape,
+    [AppTheme.HEDGY_MIDNIGHT]: hedgyMidnight,
+    [AppTheme.HEDGY_MONO]: hedgyMono,
+    [AppTheme.HEDGY_PAPER_LIGHT]: hedgyPaperLight,
     [AppTheme.HIGH_CONTRAST_DARK]: highContrastDark,
     [AppTheme.HIGH_CONTRAST_LIGHT]: highContrastLight,
     [AppTheme.MATERIAL_DARK]: materialDark,
@@ -70,6 +97,7 @@ export const appTheme: Record<AppTheme, AppThemeConfiguration> = {
     [AppTheme.VSCODE_DARK_PLUS]: vscodeDarkPlus,
     [AppTheme.VSCODE_LIGHT_PLUS]: vscodeLightPlus,
     [AppTheme.ZENBURN]: zenburn,
+    // hedgy-themes:map:end
 };
 
 // Custom themes loaded from disk (see custom-themes-store.ts) are registered

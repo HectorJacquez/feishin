@@ -104,6 +104,13 @@ const download = (url: string) => {
     ipcRenderer.send('download-url', url);
 };
 
+const downloadPlaylistZip = (data: {
+    name: string;
+    songs: Array<{ filename: string; url: string }>;
+}): Promise<{ error?: string; path?: string; success: boolean }> => {
+    return ipcRenderer.invoke('download-playlist-zip', data);
+};
+
 const checkForUpdates = (): Promise<{ updateAvailable: boolean; version?: string }> => {
     return ipcRenderer.invoke('app-check-for-updates');
 };
@@ -176,6 +183,7 @@ export const utils = {
     customCssUpdatedListener,
     disableAutoUpdates,
     download,
+    downloadPlaylistZip,
     exportDiagnostics,
     forceGarbageCollection,
     getCustomCss,

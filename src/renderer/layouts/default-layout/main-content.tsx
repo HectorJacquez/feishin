@@ -8,6 +8,7 @@ import styles from './main-content.module.css';
 
 import { ExpandedListContainer } from '/@/renderer/components/item-list/expanded-list-container';
 import { ExpandedListItem } from '/@/renderer/components/item-list/expanded-list-item';
+import { FullScreenCanvasOverlay } from '/@/renderer/layouts/default-layout/full-screen-canvas-overlay';
 import { useSidebarPanels } from '/@/renderer/features/now-playing/components/sidebar-play-queue';
 import { FullScreenOverlay } from '/@/renderer/layouts/default-layout/full-screen-overlay';
 import { FullScreenVisualizerOverlay } from '/@/renderer/layouts/default-layout/full-screen-visualizer-overlay';
@@ -208,6 +209,7 @@ export const MainContent = ({ shell }: { shell?: boolean }) => {
             {!shell && (
                 <>
                     <FullScreenVisualizerOverlay />
+                    <FullScreenCanvasOverlay />
                     <FullScreenOverlay />
                     <LeftSidebar isResizing={isResizing} startResizing={startResizing} />
                     <RightSidebar

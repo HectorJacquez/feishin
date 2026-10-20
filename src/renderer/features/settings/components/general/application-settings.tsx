@@ -374,6 +374,84 @@ export const ApplicationSettings = memo(() => {
         {
             control: (
                 <Switch
+                    checked={settings.zoomPerDisplay.enabled}
+                    onChange={(e) => {
+                        setSettings({
+                            general: {
+                                ...settings,
+                                zoomPerDisplay: {
+                                    ...settings.zoomPerDisplay,
+                                    enabled: e.currentTarget.checked,
+                                },
+                            },
+                        });
+                    }}
+                />
+            ),
+            description:
+                'Auto-scale when the window moves to a smaller display (e.g. a CRT)',
+            isHidden: !isElectron(),
+            title: 'Per-display zoom',
+        },
+        {
+            control: (
+                <NumberInput
+                    max={3840}
+                    min={640}
+                    onBlur={(e) => {
+                        if (!e) return;
+                        const newVal = e.currentTarget.value
+                            ? Math.min(Math.max(Number(e.currentTarget.value), 640), 3840)
+                            : settings.zoomPerDisplay.widthThreshold;
+                        setSettings({
+                            general: {
+                                ...settings,
+                                zoomPerDisplay: {
+                                    ...settings.zoomPerDisplay,
+                                    widthThreshold: newVal,
+                                },
+                            },
+                        });
+                    }}
+                    value={settings.zoomPerDisplay.widthThreshold}
+                />
+            ),
+            description:
+                'Displays at or below this width (px) get the alternate zoom',
+            isHidden: !isElectron() || !settings.zoomPerDisplay.enabled,
+            title: 'Small display threshold',
+        },
+        {
+            control: (
+                <NumberInput
+                    max={300}
+                    min={50}
+                    onBlur={(e) => {
+                        if (!e) return;
+                        const newVal = e.currentTarget.value
+                            ? Math.min(Math.max(Number(e.currentTarget.value), 50), 300)
+                            : settings.zoomPerDisplay.zoomFactor;
+                        setSettings({
+                            general: {
+                                ...settings,
+                                zoomPerDisplay: {
+                                    ...settings.zoomPerDisplay,
+                                    zoomFactor: newVal,
+                                },
+                            },
+                        });
+                    }}
+                    value={settings.zoomPerDisplay.zoomFactor}
+                />
+            ),
+            description:
+                'Zoom level applied on the smaller display',
+            isHidden: !isElectron() || !settings.zoomPerDisplay.enabled,
+            title: 'Small display zoom',
+        },
+        {
+            control: (
+                <Switch
                     defaultChecked={settings.resume}
                     onChange={(e) => {
                         localSettings?.set('resume', e.target.checked);

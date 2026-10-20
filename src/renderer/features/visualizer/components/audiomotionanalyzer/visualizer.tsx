@@ -2,11 +2,14 @@ import { createRef, useCallback, useEffect, useMemo, useRef, useState } from 're
 
 import styles from './visualizer.module.css';
 
+import { useVisualizerPlaybackType } from '/@/renderer/features/player/hooks/use-visualizer-playback-type';
 import { useWebAudio } from '/@/renderer/features/player/hooks/use-webaudio';
 import { getVisualizerAudioNodes } from '/@/renderer/features/player/utils/get-visualizer-audio-nodes';
 import { openVisualizerSettingsModal } from '/@/renderer/features/player/utils/open-visualizer-settings-modal';
+import { togglePopoutFullscreen } from '/@/renderer/features/player/utils/toggle-popout-fullscreen';
 import { ComponentErrorBoundary } from '/@/renderer/features/shared/components/component-error-boundary';
-import { useAccent, usePlaybackType, useSettingsStore } from '/@/renderer/store';
+import { useAccent, useSettingsStore } from '/@/renderer/store';
+import { IS_POPOUT } from '/@/shared/utils/is-popout';
 import {
     useFullScreenPlayerStore,
     useFullScreenPlayerStoreActions,
@@ -21,7 +24,7 @@ const VisualizerInner = () => {
     const canvasRef = createRef<HTMLDivElement>();
     const accent = useAccent();
     const visualizer = useSettingsStore((store) => store.visualizer);
-    const playbackType = usePlaybackType();
+    const playbackType = useVisualizerPlaybackType();
     const opacity = useSettingsStore((store) => store.visualizer.audiomotionanalyzer.opacity);
     const [motion, setMotion] = useState<any>();
     const [libraryLoaded, setLibraryLoaded] = useState(false);
@@ -357,6 +360,11 @@ export const Visualizer = () => {
     const { setStore } = useFullScreenPlayerStoreActions();
 
     const handleToggleFullscreen = () => {
+        if (IS_POPOUT) {
+            togglePopoutFullscreen();
+            return;
+        }
+
         if (visualizerExpanded) {
             setStore({
                 expanded: visualizerReturnToPlayer,

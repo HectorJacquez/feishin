@@ -48,6 +48,21 @@ const setZoomFactor = (zoomFactor: number) => {
     webFrame.setZoomFactor(zoomFactor / 100);
 };
 
+export interface DisplayInfo {
+    height: number;
+    id: number;
+    scaleFactor: number;
+    width: number;
+}
+
+const onDisplayChanged = (cb: (info: DisplayInfo) => void): (() => void) => {
+    const handler = (_: unknown, info: DisplayInfo) => cb(info);
+    ipcRenderer.on('display-changed', handler);
+    return () => {
+        ipcRenderer.removeListener('display-changed', handler);
+    };
+};
+
 const fontError = (cb: (file: string) => void) => {
     ipcRenderer.on('custom-font-error', (_, file) => cb(file));
 };
@@ -100,6 +115,7 @@ export const localSettings = {
     env,
     fontError,
     get,
+    onDisplayChanged,
     openFileSelector,
     passwordGet,
     passwordRemove,

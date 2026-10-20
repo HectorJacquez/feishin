@@ -261,6 +261,72 @@ export const ThemeSettings = memo(() => {
         {
             control: (
                 <Select
+                    data={[
+                        { label: t('setting.shapeStyleClassic'), value: 'classic' },
+                        { label: t('setting.shapeStyleRetro'), value: 'retro' },
+                        { label: t('setting.shapeStyleAero'), value: 'aero' },
+                        { label: t('setting.shapeStyleZine'), value: 'zine' },
+                    ]}
+                    defaultValue={settings.shape}
+                    onChange={(e) => {
+                        setSettings({
+                            general: {
+                                shape: (e as 'aero' | 'classic' | 'retro' | 'zine') ?? 'classic',
+                            },
+                        });
+                    }}
+                />
+            ),
+            description: t('setting.shapeStyle', { context: 'description' }),
+            title: t('setting.shapeStyle'),
+        },
+        {
+            control: (
+                <Select
+                    data={[
+                        { label: t('setting.crtScanlinesAuto'), value: 'auto' },
+                        { label: t('setting.crtScanlinesOn'), value: 'on' },
+                        { label: t('setting.crtScanlinesOff'), value: 'off' },
+                    ]}
+                    defaultValue={settings.crtScanlines}
+                    onChange={(e) => {
+                        setSettings({
+                            general: {
+                                crtScanlines: (e as 'auto' | 'off' | 'on') ?? 'auto',
+                            },
+                        });
+                    }}
+                />
+            ),
+            description: t('setting.crtScanlines', { context: 'description' }),
+            title: t('setting.crtScanlines'),
+        },
+        {
+            control: (
+                <Select
+                    data={[
+                        { label: t('setting.typePackDefault'), value: 'default' },
+                        { label: t('setting.typePackTerminal'), value: 'terminal' },
+                        { label: t('setting.typePackPixel'), value: 'pixel' },
+                        { label: t('setting.typePackTypewriter'), value: 'typewriter' },
+                        { label: t('setting.typePackRounded'), value: 'rounded' },
+                    ]}
+                    defaultValue={settings.typePack}
+                    onChange={(e) => {
+                        setSettings({
+                            general: {
+                                typePack: (e as 'default' | 'pixel' | 'terminal' | 'typewriter' | 'rounded') ?? 'default',
+                            },
+                        });
+                    }}
+                />
+            ),
+            description: t('setting.typePack', { context: 'description' }),
+            title: t('setting.typePack'),
+        },
+        {
+            control: (
+                <Select
                     data={groupedThemeData}
                     defaultValue={settings.themeDark}
                     onChange={(e) => {

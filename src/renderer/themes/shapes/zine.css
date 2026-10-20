@@ -1,0 +1,353 @@
+/* stylelint-disable selector-class-pattern -- Mantine's own class names are the hooks here */
+
+/*
+  Zine shape pack, values verbatim from the site's theme.py UIS["Zine"]
+  (cashy/shape-styles/zine.css), selectors remapped onto Feishin.
+
+  Cut-and-paste zine: hard ink frames, offset palette-tinted shadows, cards
+  on sub-degree tilts, wavy-underlined headings. Site variables -> Feishin:
+  --ink = foreground, --a = primary, --w = state-warning (role W),
+  --d = state-info (Accent 3 / colorTertiary in the Hedgy palettes), --bg = background.
+*/
+:root[data-shape='zine'] {
+    --shape-ink: var(--theme-colors-foreground);
+    --shape-accent-shadow: color-mix(in srgb, var(--theme-colors-primary) 70%, transparent);
+
+    /* --d is the site's Accent 3 (the selected-indicator colour), which the
+       Hedgy palettes carry as state-info (their colorTertiary). */
+    --shape-dim-shadow: color-mix(in srgb, var(--theme-colors-state-info) 45%, transparent);
+}
+
+/* button, select, input, textarea: 2px radius, 2px ink frame, 3px accent shadow */
+:root[data-shape='zine'] .mantine-Button-root[data-variant='filled'],
+:root[data-shape='zine'] .mantine-Button-root[data-variant='default'],
+:root[data-shape='zine'] .mantine-TextInput-input,
+:root[data-shape='zine'] .mantine-Select-input,
+:root[data-shape='zine'] .mantine-NumberInput-input,
+:root[data-shape='zine'] .mantine-Textarea-input {
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+    box-shadow: 3px 3px 0 var(--shape-accent-shadow);
+}
+
+:root[data-shape='zine'] .mantine-ActionIcon-root,
+:root[data-shape='zine'] .mantine-Tabs-tab,
+:root[data-shape='zine'] .mantine-Badge-root {
+    border-radius: 2px !important;
+}
+
+/* Room to breathe for the fat frame; icon-sized controls keep their own. */
+:root[data-shape='zine'] .mantine-Button-root[data-variant='filled'],
+:root[data-shape='zine'] .mantine-Button-root[data-variant='default'] {
+    padding: 8px 15px;
+}
+
+:root[data-shape='zine'] .mantine-Button-root:active {
+    box-shadow: 1px 1px 0 var(--shape-accent-shadow);
+    transform: translate(2px, 2px);
+}
+
+/* .job, .card, .clip, .msg, .item, .set, .pbox: frame + 6px dim shadow */
+:root[data-shape='zine'] .mantine-Paper-root,
+:root[data-shape='zine'] .mantine-Modal-content,
+:root[data-shape='zine'] .mantine-Notification-root {
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+    box-shadow: 6px 6px 0 var(--shape-dim-shadow) !important;
+}
+
+/* .card:nth-child(odd/even) tilts: sub-degree, bounded, reads as collage */
+:root[data-shape='zine'] .mantine-Paper-root:nth-child(odd) {
+    transform: rotate(-0.35deg);
+}
+
+:root[data-shape='zine'] .mantine-Paper-root:nth-child(even) {
+    transform: rotate(0.3deg);
+}
+
+/* artwork: the frame alone (tiles have nowhere to put a shadow) */
+:root[data-shape='zine'] img,
+:root[data-shape='zine'] .mantine-Image-root {
+    outline: 2px solid var(--shape-ink);
+    outline-offset: -2px;
+    border-radius: 2px !important;
+}
+
+/* h1, h2: wavy accent underline clear of descenders, no skip-ink */
+:root[data-shape='zine'] h1,
+:root[data-shape='zine'] h2 {
+    padding-top: 5px;
+    padding-bottom: 0.55em;
+    text-decoration: underline wavy var(--theme-colors-primary) 2px;
+    text-decoration-skip-ink: none;
+    text-underline-offset: 0.34em;
+}
+
+/* a { underline, offset 3px } ::selection { background: var(--w); color: var(--bg) } */
+:root[data-shape='zine'] a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+:root[data-shape='zine'] ::selection {
+    color: var(--theme-colors-background);
+    background: var(--theme-colors-state-warning);
+}
+
+/* .nav a, .navtop: 2px ink frame; hover 3px accent shadow */
+:root[data-shape='zine'] #sidebar a,
+:root[data-shape='zine'] #sidebar .mantine-NavLink-root {
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+}
+
+:root[data-shape='zine'] #sidebar a:hover,
+:root[data-shape='zine'] #sidebar .mantine-NavLink-root:hover {
+    box-shadow: 3px 3px 0 var(--shape-accent-shadow);
+}
+
+/* .navmenu: opaque, framed, flat black 45% at 7px; items bare */
+:root[data-shape='zine'] .mantine-Menu-dropdown,
+:root[data-shape='zine'] .mantine-Popover-dropdown,
+:root[data-shape='zine'] .mantine-HoverCard-dropdown {
+    background: var(--theme-colors-surface) !important;
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+    box-shadow: 7px 7px 0 rgb(0 0 0 / 45%) !important;
+    backdrop-filter: none !important;
+}
+
+:root[data-shape='zine'] .mantine-Menu-item {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* The library list: framed, shadowed items need air between them, or the
+   frames touch and the shadows land on the next item. */
+:root[data-shape='zine'] #sidebar .mantine-Button-root {
+    margin: 5px 0;
+}
+
+/* ---------------------------------------------------------------------
+   Beyond the sidebar: the same site rules carried onto Feishin's own
+   surfaces. Class hooks are the build's deterministic CSS-module names
+   (fs-<file>-module-<class>, see electron.vite.config.ts).
+   --------------------------------------------------------------------- */
+
+/* Full-screen player tab strip: .nav a frames; the active underline is a
+   highlighter stroke in --w, a hair off level like the site's notes. */
+:root[data-shape='zine'] .full-screen-player-queue-header .mantine-Button-root {
+    margin: 0 4px;
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+}
+
+:root[data-shape='zine'] .full-screen-player-queue-header .mantine-Button-root:hover {
+    box-shadow: 3px 3px 0 var(--shape-accent-shadow);
+}
+
+:root[data-shape='zine'] .fs-full-screen-player-queue-module-active-tab-indicator {
+    bottom: 5px;
+    left: 12px;
+    width: calc(100% - 24px);
+    height: 6px;
+    background: color-mix(in srgb, var(--theme-colors-state-warning) 65%, transparent);
+    transform: rotate(-0.6deg);
+}
+
+/* The panel behind the tabs is a .card: framed, dim-shadowed, tilted a
+   touch (only the paper tilts; the content stays level). */
+:root[data-shape='zine'] .fs-full-screen-player-queue-module-grid-container::before {
+    border: 2px solid var(--shape-ink);
+    border-radius: 2px;
+    box-shadow: 6px 6px 0 var(--shape-dim-shadow);
+    transform: rotate(0.3deg);
+}
+
+/* Icon buttons over the full-screen player (minimize, configure, expand). */
+:root[data-shape='zine'] .fs-full-screen-player-module-controls-container .mantine-ActionIcon-root,
+:root[data-shape='zine'] .fs-full-screen-visualizer-module-controls-container .mantine-ActionIcon-root,
+:root[data-shape='zine'] .fs-full-screen-canvas-module-icon-group .mantine-ActionIcon-root {
+    border: 2px solid var(--shape-ink) !important;
+}
+
+:root[data-shape='zine'] .fs-full-screen-player-module-controls-container .mantine-ActionIcon-root:hover,
+:root[data-shape='zine'] .fs-full-screen-visualizer-module-controls-container .mantine-ActionIcon-root:hover,
+:root[data-shape='zine'] .fs-full-screen-canvas-module-icon-group .mantine-ActionIcon-root:hover {
+    box-shadow: 3px 3px 0 var(--shape-accent-shadow);
+}
+
+:root[data-shape='zine'] .fs-full-screen-canvas-module-container {
+    border: 2px solid var(--shape-ink);
+    border-radius: 2px;
+}
+
+/* Player bar: ruled with ink, the play button a real zine button. */
+:root[data-shape='zine'] #player-bar {
+    border-top: 2px solid var(--shape-ink);
+}
+
+:root[data-shape='zine'] .fs-player-button-module-main {
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+    box-shadow: 3px 3px 0 var(--shape-accent-shadow);
+}
+
+:root[data-shape='zine'] .fs-player-button-module-main:active {
+    box-shadow: 1px 1px 0 var(--shape-accent-shadow);
+    transform: translate(2px, 2px);
+}
+
+:root[data-shape='zine'] .mantine-Slider-thumb {
+    border: 2px solid var(--shape-ink);
+    border-radius: 2px;
+}
+
+/* Library page play buttons. */
+:root[data-shape='zine'] .fs-play-button-module-play-button,
+:root[data-shape='zine'] .fs-play-button-module-play-button::before,
+:root[data-shape='zine'] .fs-play-button-module-text-button,
+:root[data-shape='zine'] .fs-play-button-module-wide-text-button {
+    border-radius: 2px !important;
+}
+
+:root[data-shape='zine'] .fs-play-button-module-play-button,
+:root[data-shape='zine'] .fs-play-button-module-text-button,
+:root[data-shape='zine'] .fs-play-button-module-wide-text-button {
+    border: 2px solid var(--shape-ink) !important;
+    box-shadow: 3px 3px 0 var(--shape-accent-shadow);
+}
+
+/* Grid cards are .card: framed, dim-shadowed, alternately tilted. Each
+   card sits alone in a row wrapper, so the odd/even comes from the
+   wrapper; the wrapper also clips its contents, which would eat the
+   shadow and the tilt, so it is opened up. */
+:root[data-shape='zine'] .fs-item-card-module-container {
+    border: 2px solid var(--shape-ink);
+    border-radius: 2px;
+    box-shadow: 6px 6px 0 var(--shape-dim-shadow);
+}
+
+/* Text clear of the 2px ink frame - a label touching the border reads as
+   a printing error even by zine's standards. */
+:root[data-shape='zine'] .fs-item-card-module-detail-container {
+    padding-right: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+}
+
+:root[data-shape='zine'] .fs-item-card-module-image-container {
+    border-radius: 2px;
+}
+
+:root[data-shape='zine'] .fs-item-grid-list-module-item-row {
+    overflow: visible;
+}
+
+:root[data-shape='zine'] .fs-item-grid-list-module-item-row:nth-child(odd) .fs-item-card-module-container {
+    transform: rotate(-0.35deg);
+}
+
+:root[data-shape='zine'] .fs-item-grid-list-module-item-row:nth-child(even) .fs-item-card-module-container {
+    transform: rotate(0.3deg);
+}
+
+/* Page header, filter bar, queue sidebar: ruled with ink. */
+:root[data-shape='zine'] .fs-page-header-module-container,
+:root[data-shape='zine'] .fs-filter-bar-module-filter-bar {
+    border-bottom: 2px solid var(--shape-ink);
+}
+
+:root[data-shape='zine'] #sidebar-queue {
+    border-left: 2px solid var(--shape-ink);
+}
+
+/* Sidebar section headings (My Library, Playlists...): the h2 squiggle. */
+:root[data-shape='zine'] .fs-sidebar-module-accordion-control .mantine-Text-root {
+    text-decoration: underline wavy var(--theme-colors-primary) 2px;
+    text-decoration-skip-ink: none;
+    text-underline-offset: 0.34em;
+}
+
+/* Settings tabs: the active one is run over with the highlighter. */
+:root[data-shape='zine'] .mantine-Tabs-tab[data-active] {
+    background: color-mix(in srgb, var(--theme-colors-state-warning) 30%, transparent) !important;
+    border-bottom: 2px solid var(--shape-ink);
+}
+
+/* ---------------------------------------------------------------------
+   Surfaces the first pass missed (2026-09-07).
+   --------------------------------------------------------------------- */
+
+/* The right-click menu (play next, play last, add to playlist) is a Radix
+   context menu, not a Mantine one, so every .mantine-*-dropdown rule above
+   slid past it and it kept the stock border and corners while the rest of
+   the app changed. Same chrome as the dropdowns; one hook covers the
+   submenu too, which renders with the same class. */
+:root[data-shape='zine'] .fs-context-menu-module-content {
+    background: var(--theme-colors-surface) !important;
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+    box-shadow: 7px 7px 0 rgb(0 0 0 / 45%) !important;
+    backdrop-filter: none !important;
+}
+
+:root[data-shape='zine'] .fs-context-menu-module-item {
+    border-radius: 0 !important;
+}
+
+:root[data-shape='zine'] .fs-context-menu-module-divider {
+    border-top-color: var(--shape-ink);
+}
+
+/* Playlist rows in the left sidebar. The packs put a frame and a hover
+   block behind these rows, and at the stock padding the text sits hard
+   against it. Two knobs: the vertical padding inside a row, and a hair of
+   space between rows so the frames read as separate. */
+:root[data-shape='zine'] .fs-sidebar-playlist-list-module-row-compact,
+:root[data-shape='zine'] .fs-playlist-folder-tree-module-nav-folder,
+:root[data-shape='zine'] .fs-playlist-folder-tree-module-header {
+    padding-top: var(--theme-spacing-md);
+    padding-bottom: var(--theme-spacing-md);
+    margin-bottom: 2px;
+}
+
+:root[data-shape='zine'] .fs-sidebar-playlist-list-module-row-group {
+    padding-top: var(--theme-spacing-sm);
+    padding-bottom: var(--theme-spacing-sm);
+}
+
+/* Popover dropdowns, the player's playback-style and speed panel among
+   them: the packs draw a heavier border than the stock one, and the
+   dropdown's own sm padding left the labels touching it. */
+:root[data-shape='zine'] .fs-popover-module-dropdown {
+    padding: var(--theme-spacing-md);
+}
+
+/* The hover controls on a playlist row (play, play next, play last) sit in
+   their own panel, and the tooltip above them is a Mantine tooltip: neither
+   is a dropdown, so both kept stock corners over a themed sidebar. */
+:root[data-shape='zine'] .fs-sidebar-playlist-list-module-controls,
+:root[data-shape='zine'] .fs-sidebar-playlist-list-module-controls-compact {
+    padding: 3px 5px;
+    border: 2px solid var(--shape-ink);
+    border-radius: 2px;
+    box-shadow: 4px 4px 0 rgb(0 0 0 / 45%);
+}
+
+:root[data-shape='zine'] .mantine-Tooltip-tooltip {
+    border: 2px solid var(--shape-ink);
+    border-radius: 2px !important;
+    box-shadow: 4px 4px 0 rgb(0 0 0 / 45%);
+}
+
+/* The hover bar as a whole: the panel was themed in round two and the
+   buttons inside it, being an ActionIconGroup, kept flattened corners. */
+:root[data-shape='zine'] .fs-item-row-play-controls-module-controls {
+    gap: 3px;
+}
+
+:root[data-shape='zine'] .fs-item-row-play-controls-module-controls .mantine-ActionIcon-root {
+    border: 2px solid var(--shape-ink) !important;
+    border-radius: 2px !important;
+}

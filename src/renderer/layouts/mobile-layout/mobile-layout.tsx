@@ -6,6 +6,7 @@ import { Outlet } from 'react-router';
 import styles from './mobile-layout.module.css';
 
 import { ContextMenuController } from '/@/renderer/features/context-menu/context-menu-controller';
+import { FullScreenCanvasExpanded } from '/@/renderer/features/player/components/full-screen-canvas-expanded';
 import { FullScreenVisualizer } from '/@/renderer/features/player/components/full-screen-visualizer';
 import { MobileFullscreenPlayer } from '/@/renderer/features/player/components/mobile-fullscreen-player';
 import { MobileSidebar } from '/@/renderer/features/sidebar/components/mobile-sidebar';
@@ -25,6 +26,7 @@ interface MobileLayoutProps {
 export const MobileLayout = ({ shell }: MobileLayoutProps) => {
     const [sidebarOpened, { close: closeSidebar, open: openSidebar }] = useDisclosure(false);
     const {
+        canvasExpanded: isFullScreenCanvasExpanded,
         expanded: isFullScreenPlayerExpanded,
         visualizerExpanded: isFullScreenVisualizerExpanded,
     } = useFullScreenPlayerOverlayState();
@@ -89,6 +91,13 @@ export const MobileLayout = ({ shell }: MobileLayoutProps) => {
                 {isFullScreenVisualizerExpanded && (
                     <div className={styles.fullScreenPlayerOverlay}>
                         <FullScreenVisualizer />
+                    </div>
+                )}
+            </AnimatePresence>
+            <AnimatePresence initial={false}>
+                {isFullScreenCanvasExpanded && (
+                    <div className={styles.fullScreenPlayerOverlay}>
+                        <FullScreenCanvasExpanded />
                     </div>
                 )}
             </AnimatePresence>

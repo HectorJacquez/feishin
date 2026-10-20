@@ -528,6 +528,17 @@ export const GeneralSettingsSchema = z.object({
     collections: z.array(CollectionSchema),
     combinedLyricsAndVisualizer: z.boolean(),
     confirmQueueChanges: z.boolean(),
+    // Accepts either a built-in AppTheme id or a custom theme id (the
+    // filename, without extension, of a JSON file in the themes folder).
+    // Custom theme ids aren't statically known, so this can't be a
+    // nativeEnum(AppTheme) any more; getAppTheme() falls back to the
+    // default theme if the stored id doesn't resolve to anything.
+    // Shape style: the non-colour half of the homelab's theme system, kept
+    // independent of the palette so any look composes with any colours.
+    // CRT scanlines: an effect of its own that rides on any shape and
+    // palette. 'auto' follows the shape (on for Retro CRT, off otherwise);
+    // 'on'/'off' is the user's word and always wins, as on the site.
+    crtScanlines: z.enum(['auto', 'on', 'off']),
     disabledContextMenu: z.record(z.string(), z.boolean()),
     enableGridMultiSelect: z.boolean(),
     externalLinks: z.boolean(),
@@ -565,6 +576,7 @@ export const GeneralSettingsSchema = z.object({
     primaryShade: z.number().min(0).max(9),
     qobuz: z.boolean(),
     resume: z.boolean(),
+    shape: z.enum(['classic', 'retro', 'aero', 'zine']),
     shareExpiration: ShareExpirationSchema,
     showFavorites: z.boolean(),
     showLyricsInSidebar: z.boolean(),
@@ -589,19 +601,22 @@ export const GeneralSettingsSchema = z.object({
     sideQueueType: SideQueueTypeSchema,
     skipButtons: SkipButtonsSchema,
     spotify: z.boolean(),
-    // Accepts either a built-in AppTheme id or a custom theme id (the
-    // filename, without extension, of a JSON file in the themes folder).
-    // Custom theme ids aren't statically known, so this can't be a
-    // nativeEnum(AppTheme) any more; getAppTheme() falls back to the
-    // default theme if the stored id doesn't resolve to anything.
     theme: z.string(),
     themeDark: z.string(),
     themeLight: z.string(),
+    // Type pack: the third axis. Terminal is what Retro CRT used to bundle;
+    // Pixel is Press Start 2P on headings, nav and buttons.
+    typePack: z.enum(['default', 'terminal', 'pixel', 'typewriter', 'rounded']),
     useThemeAccentColor: z.boolean(),
     useThemePrimaryShade: z.boolean(),
     volumeWheelStep: z.number(),
     volumeWidth: z.number(),
     zoomFactor: z.number(),
+    zoomPerDisplay: z.object({
+        enabled: z.boolean(),
+        widthThreshold: z.number(),
+        zoomFactor: z.number(),
+    }),
 });
 
 const HotkeyBindingSchema = z.object({
@@ -628,6 +643,15 @@ const LyricsDisplaySettingsSchema = z.object({
     paddingLeft: z.number(),
     paddingRight: z.number(),
     scaleNonActive: z.number(),
+});
+
+// Canvas clips: the homelab's looping album videos, shown in the full-screen
+// player's Canvas tab. Served by the work-server (not the music server), so
+// it has its own address and token, the same pair Tempo's settings hold.
+const CanvasSettingsSchema = z.object({
+    preferWide: z.boolean(),
+    serverUrl: z.string(),
+    token: z.string(),
 });
 
 const LyricsSettingsSchema = z.object({
@@ -833,6 +857,7 @@ export type ScrobbleMinimumMode = (typeof ScrobbleMinimumMode)[keyof typeof Scro
  */
 export const ValidationSettingsStateSchema = z.object({
     autoDJ: AutoDJSettingsSchema,
+    canvas: CanvasSettingsSchema,
     css: CssSettingsSchema,
     discord: DiscordSettingsSchema,
     font: FontSettingsSchema,
@@ -1310,6 +1335,11 @@ const initialState: SettingsState = {
         songStrategy: AUTO_DJ_STRATEGY.SIMILAR,
         timing: 1,
     },
+    canvas: {
+        preferWide: true,
+        serverUrl: '',
+        token: '',
+    },
     css: {
         content: '',
         enabled: false,
@@ -1352,6 +1382,7 @@ const initialState: SettingsState = {
         collections: [],
         combinedLyricsAndVisualizer: false,
         confirmQueueChanges: true,
+        crtScanlines: 'auto',
         disabledContextMenu: {},
         enableGridMultiSelect: false,
         externalLinks: true,
@@ -1397,6 +1428,7 @@ const initialState: SettingsState = {
         primaryShade: 6,
         qobuz: true,
         resume: true,
+        shape: 'classic',
         shareExpiration: {
             amount: 1,
             unit: ShareExpirationUnit.YEAR,
@@ -1432,11 +1464,17 @@ const initialState: SettingsState = {
         theme: AppTheme.DEFAULT_DARK,
         themeDark: AppTheme.DEFAULT_DARK,
         themeLight: AppTheme.DEFAULT_LIGHT,
+        typePack: 'default',
         useThemeAccentColor: false,
         useThemePrimaryShade: true,
         volumeWheelStep: 5,
         volumeWidth: 70,
         zoomFactor: 100,
+        zoomPerDisplay: {
+            enabled: false,
+            widthThreshold: 1280,
+            zoomFactor: 175,
+        },
     },
     hotkeys: {
         bindings: {
@@ -2931,10 +2969,14 @@ export const useSettingsStore = createWithEqualityFn<SettingsSlice>()(
                     });
                 }
 
+                if (version < 35) {
+                    state.visualizer.butterchurn.randomizeNextPreset = true;
+                }
+
                 return persistedState;
             },
             name: 'store_settings',
-            version: 34,
+            version: 35,
         },
     ),
 );
@@ -2982,6 +3024,8 @@ export const useMpvSettings = () =>
     useSettingsStore((state) => state.playback.mpvProperties, shallow);
 
 export const useLyricsSettings = () => useSettingsStore((state) => state.lyrics, shallow);
+
+export const useCanvasSettings = () => useSettingsStore((state) => state.canvas, shallow);
 
 export const useLyricsDisplaySettings = (key: string = 'default') =>
     useSettingsStore((state) => state.lyricsDisplay[key] || state.lyricsDisplay.default, shallow);
@@ -3059,6 +3103,12 @@ export const useVolumeWidth = () => useSettingsStore((state) => state.general.vo
 
 export const useFollowCurrentSong = () =>
     useSettingsStore((state) => state.general.followCurrentSong, shallow);
+
+export const useShapeStyle = () => useSettingsStore((state) => state.general.shape);
+
+export const useCrtScanlines = () => useSettingsStore((state) => state.general.crtScanlines);
+
+export const useTypePack = () => useSettingsStore((state) => state.general.typePack);
 
 export const useFullscreenAutoOpenTimeout = () =>
     useSettingsStore((state) => state.general.fullscreenAutoOpenTimeout, shallow);
@@ -3192,6 +3242,9 @@ export const useArtistReleaseTypeItems = () =>
     useSettingsStore((state) => state.general.artistReleaseTypeItems, shallow);
 
 export const useZoomFactor = () => useSettingsStore((state) => state.general.zoomFactor, shallow);
+
+export const useZoomPerDisplay = () =>
+    useSettingsStore((state) => state.general.zoomPerDisplay, shallow);
 
 export const usePathReplace = () =>
     useSettingsStore(

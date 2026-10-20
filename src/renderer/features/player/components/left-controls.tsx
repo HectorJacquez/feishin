@@ -42,6 +42,7 @@ export const LeftControls = () => {
     const { t } = useTranslation();
     const { setSideBar } = useAppStoreActions();
     const {
+        canvasExpanded: isFullScreenCanvasExpanded,
         expanded: isFullScreenPlayerExpanded,
         visualizerExpanded: isFullScreenVisualizerExpanded,
     } = useFullScreenPlayerStore();
@@ -76,10 +77,14 @@ export const LeftControls = () => {
 
         e?.stopPropagation();
 
-        const shouldClose = isFullScreenPlayerExpanded || isFullScreenVisualizerExpanded;
+        const shouldClose =
+            isFullScreenPlayerExpanded ||
+            isFullScreenVisualizerExpanded ||
+            isFullScreenCanvasExpanded;
 
         if (shouldClose) {
             setFullScreenPlayerStore({
+                canvasExpanded: false,
                 expanded: false,
                 visualizerExpanded: false,
                 visualizerReturnToPlayer: false,

@@ -2,6 +2,7 @@ import { memo, useMemo } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 
 import { ApplicationSettings } from '/@/renderer/features/settings/components/general/application-settings';
+import { CanvasSettings } from '/@/renderer/features/settings/components/general/canvas-settings';
 import { ControlSettings } from '/@/renderer/features/settings/components/general/control-settings';
 import { ExternalLinksSettings } from '/@/renderer/features/settings/components/general/external-links-settings';
 import { LyricSettings } from '/@/renderer/features/settings/components/general/lyric-settings';
@@ -28,6 +29,7 @@ export const GeneralTab = memo(() => {
             { component: SidebarSettings, key: 'sidebar' },
             { component: ScrobbleSettings, key: 'scrobble' },
             { component: LyricSettings, key: 'lyrics' },
+            { component: CanvasSettings, key: 'canvas' },
         ];
 
         if (supportsSmartPlaylists) {

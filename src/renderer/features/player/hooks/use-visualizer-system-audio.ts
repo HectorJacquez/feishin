@@ -2,8 +2,8 @@ import isElectron from 'is-electron';
 import { useCallback, useEffect, useRef } from 'react';
 
 import i18n from '/@/i18n/i18n';
+import { useVisualizerPlaybackType } from '/@/renderer/features/player/hooks/use-visualizer-playback-type';
 import { useWebAudio } from '/@/renderer/features/player/hooks/use-webaudio';
-import { usePlaybackType } from '/@/renderer/store/settings.store';
 import { toast } from '/@/shared/components/toast/toast';
 import { PlayerType, WebAudio } from '/@/shared/types/types';
 
@@ -18,7 +18,7 @@ export function useVisualizerSystemAudio(options: {
     const onSuccessRef = useRef(onSystemAudioCaptureSuccess);
     onDeniedRef.current = onSystemAudioCaptureDenied;
     onSuccessRef.current = onSystemAudioCaptureSuccess;
-    const playbackType = usePlaybackType();
+    const playbackType = useVisualizerPlaybackType();
     const isMacOS = Boolean(window.api?.utils?.isMacOS?.());
     const { setWebAudio, webAudio } = useWebAudio();
     const webAudioRef = useRef(webAudio);

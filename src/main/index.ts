@@ -6,6 +6,7 @@ import {
     BrowserWindow,
     BrowserWindowConstructorOptions,
     desktopCapturer,
+    dialog,
     globalShortcut,
     ipcMain,
     Menu,
@@ -22,7 +23,9 @@ import {
 } from 'electron';
 import electronLocalShortcut from 'electron-localshortcut';
 import { AppImageUpdater, autoUpdater, MacUpdater, NsisUpdater } from 'electron-updater';
-import { access, constants } from 'fs';
+import { ZipArchive } from 'archiver';
+import { access, constants, createWriteStream } from 'fs';
+import { rm } from 'fs/promises';
 import path, { join } from 'path';
 import semver from 'semver';
 
@@ -612,6 +615,44 @@ const validateUrl = (url: string): boolean => {
     return url.startsWith('http://') || url.startsWith('https://');
 };
 
+// Probes each song without downloading it, so the user can be warned up front instead of
+// finding out from the final count that tracks were silently dropped. Uses a ranged GET
+// rather than HEAD because stream/download endpoints commonly reject HEAD.
+async function findUnavailableSongs(
+    songs: Array<{ filename: string; url: string }>,
+    concurrency = 8,
+): Promise<string[]> {
+    const unavailable: string[] = [];
+    let cursor = 0;
+
+    const probe = async (song: { filename: string; url: string }) => {
+        const controller = new AbortController();
+        try {
+            const response = await net.fetch(song.url, {
+                headers: { Range: 'bytes=0-0' },
+                signal: controller.signal,
+            });
+            if (!response.ok && response.status !== 416) {
+                unavailable.push(song.filename);
+            }
+        } catch {
+            unavailable.push(song.filename);
+        } finally {
+            controller.abort();
+        }
+    };
+
+    const workers = Array.from({ length: Math.min(concurrency, songs.length) }, async () => {
+        while (cursor < songs.length) {
+            const song = songs[cursor++];
+            if (song) await probe(song);
+        }
+    });
+
+    await Promise.all(workers);
+    return unavailable;
+}
+
 async function createWindow(first = true): Promise<void> {
     if (isDevelopment) {
         await installExtensions().catch((error) => log.error(error));
@@ -736,6 +777,67 @@ async function createWindow(first = true): Promise<void> {
         }
     });
 
+    const panelPopouts = new Set<BrowserWindow>();
+    const PANEL_POPOUT_CASCADE_PX = 32;
+
+    ipcMain.on('panel-popout', () => {
+        const mainBounds = mainWindow?.getBounds();
+        const cascade = panelPopouts.size * PANEL_POPOUT_CASCADE_PX;
+
+        const popout = new BrowserWindow({
+            autoHideMenuBar: true,
+            frame: true,
+            height: mainBounds?.height ?? 600,
+            icon: isWindows() ? getAssetPath('icons/icon.ico') : getAssetPath('icons/icon.png'),
+            minHeight: 300,
+            minWidth: 300,
+            title: 'Feishin Panel',
+            webPreferences: {
+                allowRunningInsecureContent: !!store.get('ignore_ssl'),
+                backgroundThrottling: false,
+                contextIsolation: true,
+                devTools: true,
+                nodeIntegration: false,
+                preload: join(__dirname, '../preload/index.js'),
+                sandbox: true,
+                webSecurity: !store.get('ignore_cors'),
+            },
+            width: 450,
+            x: mainBounds ? mainBounds.x + mainBounds.width + cascade : undefined,
+            y: mainBounds ? mainBounds.y + cascade : undefined,
+        });
+
+        panelPopouts.add(popout);
+
+        if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+            popout.loadURL(`${process.env['ELECTRON_RENDERER_URL']}?popout=panel`);
+        } else {
+            popout.loadFile(join(__dirname, '../renderer/index.html'), {
+                query: { popout: 'panel' },
+            });
+        }
+
+        popout.on('closed', () => {
+            panelPopouts.delete(popout);
+        });
+
+        popout.webContents.setWindowOpenHandler((details) => {
+            if (validateUrl(details.url)) {
+                shell.openExternal(details.url);
+            }
+            return { action: 'deny' };
+        });
+    });
+
+    ipcMain.on('panel-popout-close-all', () => {
+        for (const popout of [...panelPopouts]) {
+            if (!popout.isDestroyed()) {
+                popout.close();
+            }
+        }
+        panelPopouts.clear();
+    });
+
     ipcMain.on('global-media-keys-enable', () => {
         enableMediaKeys(mainWindow);
     });
@@ -748,6 +850,119 @@ async function createWindow(first = true): Promise<void> {
         mainWindow?.webContents.downloadURL(url);
     });
 
+    ipcMain.handle(
+        'download-playlist-zip',
+        async (
+            _,
+            data: { name: string; songs: Array<{ filename: string; url: string }> },
+        ) => {
+            if (!mainWindow) return { error: 'No window', success: false };
+
+            mainWindow.webContents.send('toast-from-main', {
+                message: `Checking ${data.songs.length} songs...`,
+                type: 'info',
+            });
+
+            const unavailable = await findUnavailableSongs(data.songs);
+
+            if (unavailable.length === data.songs.length) {
+                mainWindow.webContents.send('toast-from-main', {
+                    message: 'None of the songs in this playlist could be reached.',
+                    type: 'error',
+                });
+                return { error: 'No reachable songs', success: false };
+            }
+
+            if (unavailable.length > 0) {
+                const preview = unavailable.slice(0, 8).join('\n');
+                const more =
+                    unavailable.length > 8 ? `\n...and ${unavailable.length - 8} more` : '';
+
+                const { response } = await dialog.showMessageBox(mainWindow, {
+                    buttons: ['Cancel', `Download ${data.songs.length - unavailable.length}`],
+                    cancelId: 0,
+                    defaultId: 0,
+                    detail: `${preview}${more}`,
+                    message: `${unavailable.length} of ${data.songs.length} songs can't be downloaded and will be missing from the zip.`,
+                    title: 'Some songs are unavailable',
+                    type: 'warning',
+                });
+
+                if (response !== 1) return { success: false };
+            }
+
+            const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+                defaultPath: `${data.name}.zip`,
+                filters: [{ extensions: ['zip'], name: 'ZIP Archive' }],
+            });
+
+            if (canceled || !filePath) return { success: false };
+
+            mainWindow.webContents.send('toast-from-main', {
+                message: `Downloading ${data.songs.length} songs...`,
+                type: 'info',
+            });
+
+            try {
+                const output = createWriteStream(filePath);
+                // Attached before finalize: 'close' can fire before the await below is
+                // reached, and a listener added afterwards would never see it.
+                const closed = new Promise<void>((resolve, reject) => {
+                    output.on('close', resolve);
+                    output.on('error', reject);
+                });
+
+                const archive = new ZipArchive({ zlib: { level: 1 } });
+                const archiveFailed = new Promise<never>((_resolve, reject) => {
+                    archive.on('error', reject);
+                });
+                archive.pipe(output);
+
+                let completed = 0;
+                for (const song of data.songs) {
+                    try {
+                        const response = await net.fetch(song.url);
+                        if (!response.ok || !response.body) {
+                            log.warn('Skipped song download', {
+                                filename: song.filename,
+                                status: response.status,
+                            });
+                            continue;
+                        }
+                        const buf = Buffer.from(await response.arrayBuffer());
+                        archive.append(buf, { name: song.filename });
+                        completed += 1;
+                    } catch (err) {
+                        log.warn('Failed to download song', {
+                            error: String(err),
+                            filename: song.filename,
+                        });
+                    }
+                }
+
+                await Promise.race([archive.finalize(), archiveFailed]);
+                await Promise.race([closed, archiveFailed]);
+
+                mainWindow?.webContents.send('toast-from-main', {
+                    message: `Saved ${completed} songs to ${path.basename(filePath)}`,
+                    type: 'success',
+                });
+
+                return { path: filePath, success: true };
+            } catch (err) {
+                log.error('Playlist zip failed', { error: String(err) });
+                try {
+                    await rm(filePath, { force: true });
+                } catch {}
+                mainWindow?.webContents.send('toast-from-main', {
+                    message: `Download failed: ${String(err)}`,
+                    type: 'error',
+                });
+                return { error: String(err), success: false };
+            }
+        },
+    );
+
     const globalMediaKeysEnabled = store.get('global_media_hotkeys', true) as boolean;
 
     if (globalMediaKeysEnabled) {
@@ -755,6 +970,8 @@ async function createWindow(first = true): Promise<void> {
     }
 
     const startWindowMinimized = store.get('window_start_minimized', false) as boolean;
+
+    let currentDisplayId: number | null = null;
 
     mainWindow.on('ready-to-show', () => {
         // mainWindow.show()
@@ -779,6 +996,42 @@ async function createWindow(first = true): Promise<void> {
         }
 
         log.info('Main window created', { startMinimized: startWindowMinimized && first });
+
+        // Send initial display info so the renderer can apply per-display zoom
+        const initialBounds = mainWindow.getBounds();
+        const initialDisplay = screen.getDisplayNearestPoint({
+            x: initialBounds.x + initialBounds.width / 2,
+            y: initialBounds.y + initialBounds.height / 2,
+        });
+        currentDisplayId = initialDisplay.id;
+        mainWindow.webContents.send('display-changed', {
+            height: initialDisplay.size.height,
+            id: initialDisplay.id,
+            scaleFactor: initialDisplay.scaleFactor,
+            width: initialDisplay.size.width,
+        });
+    });
+
+    let moveDebounce: ReturnType<typeof setTimeout> | null = null;
+    mainWindow.on('move', () => {
+        if (moveDebounce) clearTimeout(moveDebounce);
+        moveDebounce = setTimeout(() => {
+            if (!mainWindow) return;
+            const bounds = mainWindow.getBounds();
+            const display = screen.getDisplayNearestPoint({
+                x: bounds.x + bounds.width / 2,
+                y: bounds.y + bounds.height / 2,
+            });
+            if (display.id !== currentDisplayId) {
+                currentDisplayId = display.id;
+                mainWindow.webContents.send('display-changed', {
+                    height: display.size.height,
+                    id: display.id,
+                    scaleFactor: display.scaleFactor,
+                    width: display.size.width,
+                });
+            }
+        }, 100);
     });
 
     mainWindow.webContents.on('render-process-gone', (_event, details) => {
@@ -869,8 +1122,19 @@ async function createWindow(first = true): Promise<void> {
         return { action: 'deny' };
     });
 
-    mainWindow.webContents.session.setDisplayMediaRequestHandler((_request, callback) => {
-        if (!canHandleVisualizerDisplayMedia()) {
+    mainWindow.webContents.session.setDisplayMediaRequestHandler((request, callback) => {
+        // A popout panel has no audio element of its own, so its visualizer can only
+        // work by capturing system loopback regardless of the configured playback type.
+        const isFromPanelPopout = [...panelPopouts].some((popout) => {
+            if (popout.isDestroyed()) return false;
+            const frame = popout.webContents.mainFrame;
+            return (
+                request.frame?.processId === frame.processId &&
+                request.frame?.routingId === frame.routingId
+            );
+        });
+
+        if (!isFromPanelPopout && !canHandleVisualizerDisplayMedia()) {
             callback({});
             return;
         }

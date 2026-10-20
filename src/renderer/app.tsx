@@ -9,14 +9,23 @@ import '@mantine/notifications/styles.css';
 import isElectron from 'is-electron';
 import { lazy, memo, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 
+import { MemoryRouter } from 'react-router';
+
 import i18n from '/@/i18n/i18n';
 import { WebAudioContext } from '/@/renderer/features/player/context/webaudio-context';
+import {
+    startPopoutBroadcast,
+    startPopoutReceive,
+} from '/@/renderer/features/player/utils/popout-sync';
+import { ModalsProvider } from '/@/shared/components/modal/modal';
+import { toast } from '/@/shared/components/toast/toast';
+import { IS_POPOUT } from '/@/shared/utils/is-popout';
 import { useCheckForUpdates } from '/@/renderer/hooks/use-check-for-updates';
 import { useFullscreenAutoOpen } from '/@/renderer/hooks/use-fullscreen-auto-open';
 import { useFullscreenToggle } from '/@/renderer/hooks/use-fullscreen-toggle';
 import { useNativeMenuSync } from '/@/renderer/hooks/use-native-menu-sync';
 import { useSyncSettingsToMain } from '/@/renderer/hooks/use-sync-settings-to-main';
-import { AppRouter } from '/@/renderer/router/app-router';
+import { AppRouter, appRouterModals } from '/@/renderer/router/app-router';
 import {
     useCssSettings,
     useHotkeySettings,
@@ -62,15 +71,57 @@ export const App = () => {
     return <ThemedApp />;
 };
 
+const PopoutPanel = lazy(() =>
+    import('/@/renderer/features/player/components/popout-panel').then((module) => ({
+        default: module.PopoutPanel,
+    })),
+);
+
 const ThemedApp = () => {
     const { mode, theme } = useAppTheme();
 
     return (
         <MantineProvider forceColorScheme={mode} theme={theme}>
-            <AppShell />
+            {IS_POPOUT ? <PopoutShell /> : <AppShell />}
         </MantineProvider>
     );
 };
+
+const PopoutShell = memo(function PopoutShell() {
+    const [webAudio, setWebAudio] = useState<WebAudio>();
+
+    const webAudioProvider = useMemo(() => {
+        return { setWebAudio, webAudio };
+    }, [webAudio]);
+
+    useEffect(() => startPopoutReceive(), []);
+
+    return (
+        // The queue and related-songs lists render ItemTableList, which calls useParams
+        // and useNavigate; those throw outside a router, so the panel needs one even
+        // though the popout never navigates.
+        <MemoryRouter>
+            {/* Without this the gear buttons inside the visualizer and lyrics panels
+                open nothing here, since openContextModal needs a provider. */}
+            <ModalsProvider modals={appRouterModals}>
+                <WebAudioContext.Provider value={webAudioProvider}>
+                    <PlayerProvider>
+                        <LanguageEffect />
+                        <CssSettingsEffect />
+                        <Notifications
+                            containerWidth="300px"
+                            position="bottom-center"
+                            zIndex={50000}
+                        />
+                        <Suspense fallback={null}>
+                            <PopoutPanel />
+                        </Suspense>
+                    </PlayerProvider>
+                </WebAudioContext.Provider>
+            </ModalsProvider>
+        </MemoryRouter>
+    );
+});
 
 const AppShell = memo(function AppShell() {
     const [webAudio, setWebAudio] = useState<WebAudio>();
@@ -78,6 +129,8 @@ const AppShell = memo(function AppShell() {
     const webAudioProvider = useMemo(() => {
         return { setWebAudio, webAudio };
     }, [webAudio]);
+
+    useEffect(() => startPopoutBroadcast(), []);
 
     const notificationStyles = useMemo(
         () => ({
@@ -123,6 +176,7 @@ const AppEffects = () => (
         <FullscreenToggleEffect />
         <FullscreenAutoOpenEffect />
         <InputFocusEffect />
+        <MainMessageEffect />
     </>
 );
 
@@ -274,6 +328,22 @@ const FullscreenToggleEffect = () => {
 
 const FullscreenAutoOpenEffect = () => {
     useFullscreenAutoOpen();
+
+    return null;
+};
+
+const MainMessageEffect = () => {
+    useEffect(() => {
+        if (!isElectron()) return;
+
+        window.api?.utils?.mainMessageListener?.(({ message, type }) => {
+            toast[type === 'warning' ? 'warn' : type]({ message });
+        });
+
+        return () => {
+            window.api?.ipc?.removeAllListeners('toast-from-main');
+        };
+    }, []);
 
     return null;
 };

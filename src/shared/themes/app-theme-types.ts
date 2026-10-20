@@ -17,6 +17,19 @@ export enum AppTheme {
     GLASSY_DARK = 'glassyDark',
     GRUVBOX_DARK = 'gruvboxDark',
     GRUVBOX_LIGHT = 'gruvboxLight',
+    // hedgy-themes:start
+    HEDGY_AERO_SKY = 'hedgyAeroSky',
+    HEDGY_ARCADE_AMBER = 'hedgyArcadeAmber',
+    HEDGY_DEEP_SEA = 'hedgyDeepSea',
+    HEDGY_EMBER = 'hedgyEmber',
+    HEDGY_FOREST = 'hedgyForest',
+    HEDGY_GAME_BOY_DMG = 'hedgyGameBoyDmg',
+    HEDGY_GB_LIGHT = 'hedgyGbLight',
+    HEDGY_GB_POCKET = 'hedgyGbPocket',
+    HEDGY_GBC_GRAPE = 'hedgyGbcGrape',
+    HEDGY_MIDNIGHT = 'hedgyMidnight',
+    HEDGY_MONO = 'hedgyMono',
+    HEDGY_PAPER_LIGHT = 'hedgyPaperLight',
     HIGH_CONTRAST_DARK = 'highContrastDark',
     HIGH_CONTRAST_LIGHT = 'highContrastLight',
     MATERIAL_DARK = 'materialDark',
@@ -35,6 +48,7 @@ export enum AppTheme {
     VSCODE_DARK_PLUS = 'vscodeDarkPlus',
     VSCODE_LIGHT_PLUS = 'vscodeLightPlus',
     ZENBURN = 'zenburn',
+    // hedgy-themes:end
 }
 
 export type AppThemeConfiguration = Partial<BaseAppThemeConfiguration>;

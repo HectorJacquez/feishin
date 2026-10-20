@@ -1,0 +1,393 @@
+/* stylelint-disable selector-class-pattern -- Mantine's own class names are the hooks here */
+
+/*
+  Frutiger Aero shape pack, values verbatim from the site's theme.py
+  UIS["Frutiger Aero"] (cashy/shape-styles/frutiger-aero.css), selectors
+  remapped onto Feishin.
+
+  The glass only reads with something behind it. On the site cards sit over
+  a body gradient; Feishin's main content is flat, so this pack also gives
+  #main-content a palette gradient (background -> surface) for the blur to
+  frost. Site variables -> Feishin: --bg = background, --ink = foreground.
+*/
+
+/* button, select, input: capsule, 7x15 padding, .34 rim, the four-stop gloss */
+:root[data-shape='aero'] .mantine-Button-root,
+:root[data-shape='aero'] .mantine-ActionIcon-root,
+:root[data-shape='aero'] .mantine-TextInput-input,
+:root[data-shape='aero'] .mantine-Select-input,
+:root[data-shape='aero'] .mantine-NumberInput-input {
+    border-radius: 999px !important;
+}
+
+:root[data-shape='aero'] .mantine-Button-root[data-variant='filled'],
+:root[data-shape='aero'] .mantine-Button-root[data-variant='default'] {
+    padding: 7px 15px !important;
+    white-space: nowrap;
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 30%),
+        rgb(255 255 255 / 7%) 45%,
+        rgb(255 255 255 / 0%) 52%,
+        rgb(255 255 255 / 14%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 34%) !important;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 50%) !important;
+}
+
+:root[data-shape='aero'] .mantine-Button-root:active {
+    transform: translateY(1px);
+}
+
+/* textarea { radius 18px; border 1px rgba(255,255,255,.3) } */
+:root[data-shape='aero'] .mantine-Textarea-input {
+    border: 1px solid rgb(255 255 255 / 30%) !important;
+    border-radius: 18px !important;
+}
+
+/* .job, .card, .clip, .msg, .item, .set, .note, .pbox: 22px glass, bg 58% tint, .26 border, .38 rim, blur 7 */
+:root[data-shape='aero'] .mantine-Paper-root,
+:root[data-shape='aero'] .mantine-Modal-content,
+:root[data-shape='aero'] .mantine-Notification-root {
+    background-color: color-mix(in srgb, var(--theme-colors-background) 58%, transparent) !important;
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 1.5%) 60%) !important;
+    border: 1px solid rgb(255 255 255 / 26%) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 8px 26px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 38%) !important;
+    backdrop-filter: blur(7px);
+}
+
+/* .bar, audio { radius 999px } */
+:root[data-shape='aero'] .mantine-Slider-track,
+:root[data-shape='aero'] .mantine-Slider-bar,
+:root[data-shape='aero'] .mantine-Progress-root {
+    border-radius: 999px !important;
+}
+
+/* h1, h2 glow: hardcoded aero-blue, not palette-derived */
+:root[data-shape='aero'] h1,
+:root[data-shape='aero'] h2 {
+    text-shadow: 0 1px 8px rgb(140 210 255 / 40%);
+}
+
+/* img { radius 14px } */
+:root[data-shape='aero'] img,
+:root[data-shape='aero'] .mantine-Image-root {
+    border-radius: 14px;
+}
+
+/* .nav a, .navtop: capsule 6x14, .32 rim, three-stop gloss, inset .45 rim */
+:root[data-shape='aero'] #sidebar a,
+:root[data-shape='aero'] #sidebar .mantine-NavLink-root {
+    padding: 6px 14px !important;
+    white-space: nowrap;
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 26%),
+        rgb(255 255 255 / 5%) 50%,
+        rgb(255 255 255 / 12%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 32%) !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
+}
+
+/* .navmenu { radius 18px; border .3; shadow 0 12px 34px .45 }; items capsule, bare */
+:root[data-shape='aero'] .mantine-Menu-dropdown,
+:root[data-shape='aero'] .mantine-Popover-dropdown,
+:root[data-shape='aero'] .mantine-HoverCard-dropdown {
+    border: 1px solid rgb(255 255 255 / 30%) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 34px rgb(0 0 0 / 45%) !important;
+}
+
+:root[data-shape='aero'] .mantine-Menu-item {
+    background-image: none !important;
+    border: none !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+/* Something for the glass to sit on: the site's body gradient, from the palette. */
+:root[data-shape='aero'] #main-content {
+    background-image: linear-gradient(
+        160deg,
+        var(--theme-colors-surface) 0%,
+        var(--theme-colors-background) 45%,
+        color-mix(in srgb, var(--theme-colors-primary) 18%, var(--theme-colors-background)) 100%
+    ) !important;
+}
+
+/* The library list: capsules need air between them, or the rims merge. */
+:root[data-shape='aero'] #sidebar .mantine-Button-root {
+    margin: 4px 0;
+}
+
+/* ---------------------------------------------------------------------
+   Beyond the sidebar: the same site rules carried onto Feishin's own
+   surfaces. Class hooks are the build's deterministic CSS-module names
+   (fs-<file>-module-<class>, see electron.vite.config.ts).
+   --------------------------------------------------------------------- */
+
+/* Full-screen player tab strip: .nav a capsules; the active underline
+   becomes a glow line tucked inside the capsule. */
+:root[data-shape='aero'] .full-screen-player-queue-header .mantine-Button-root {
+    padding: 6px 14px !important;
+    margin: 0 4px;
+    white-space: nowrap;
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 26%),
+        rgb(255 255 255 / 5%) 50%,
+        rgb(255 255 255 / 12%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 32%) !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
+}
+
+:root[data-shape='aero'] .fs-full-screen-player-queue-module-active-tab-indicator {
+    bottom: 3px;
+    left: 18px;
+    width: calc(100% - 36px);
+    height: 3px;
+    background: var(--theme-colors-primary);
+    border-radius: 999px;
+    box-shadow: 0 0 8px var(--theme-colors-primary);
+}
+
+/* The panel behind the tabs is a .card: the glass. */
+:root[data-shape='aero'] .fs-full-screen-player-queue-module-grid-container::before {
+    background-color: color-mix(in srgb, var(--theme-colors-background) 58%, transparent);
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 1.5%) 60%);
+    border: 1px solid rgb(255 255 255 / 26%);
+    border-radius: 22px;
+    box-shadow: 0 8px 26px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 38%);
+    backdrop-filter: blur(7px);
+}
+
+/* Icon buttons over the full-screen player (minimize, configure, expand): nav capsules. */
+:root[data-shape='aero'] .fs-full-screen-player-module-controls-container .mantine-ActionIcon-root,
+:root[data-shape='aero'] .fs-full-screen-visualizer-module-controls-container .mantine-ActionIcon-root,
+:root[data-shape='aero'] .fs-full-screen-canvas-module-icon-group .mantine-ActionIcon-root {
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 26%),
+        rgb(255 255 255 / 5%) 50%,
+        rgb(255 255 255 / 12%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 32%) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
+}
+
+:root[data-shape='aero'] .fs-full-screen-canvas-module-container,
+:root[data-shape='aero'] .fs-full-screen-player-image-module-metadata-container {
+    border-radius: 18px;
+}
+
+:root[data-shape='aero'] .fs-full-screen-canvas-module-container {
+    border: 1px solid rgb(255 255 255 / 30%);
+}
+
+/* Player bar: a glass strip with the rim on its top edge; the play button
+   gets the four-stop gloss. */
+:root[data-shape='aero'] #player-bar {
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 60%);
+    border-top: 1px solid rgb(255 255 255 / 30%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 38%);
+}
+
+:root[data-shape='aero'] .fs-player-button-module-main {
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 30%),
+        rgb(255 255 255 / 7%) 45%,
+        rgb(255 255 255 / 0%) 52%,
+        rgb(255 255 255 / 14%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 34%) !important;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 50%) !important;
+}
+
+:root[data-shape='aero'] .fs-player-button-module-main:active {
+    transform: translateY(1px);
+}
+
+:root[data-shape='aero'] .mantine-Slider-thumb {
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 30%),
+        rgb(255 255 255 / 0%) 52%,
+        rgb(255 255 255 / 14%)
+    );
+    border: 1px solid rgb(255 255 255 / 34%);
+    border-radius: 999px;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 50%);
+}
+
+/* Library page play buttons: the button gloss. */
+:root[data-shape='aero'] .fs-play-button-module-play-button,
+:root[data-shape='aero'] .fs-play-button-module-text-button,
+:root[data-shape='aero'] .fs-play-button-module-wide-text-button {
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 30%),
+        rgb(255 255 255 / 7%) 45%,
+        rgb(255 255 255 / 0%) 52%,
+        rgb(255 255 255 / 14%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 34%) !important;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 50%) !important;
+}
+
+/* Grid cards are .card: the glass, minus the backdrop blur (hundreds of
+   them in a virtual grid, and the flat surface behind them has nothing
+   to frost). The row wrapper clips its contents, which would eat the
+   shadow, so it is opened up. */
+:root[data-shape='aero'] .fs-item-card-module-container {
+    background-color: color-mix(in srgb, var(--theme-colors-background) 58%, transparent);
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 1.5%) 60%);
+    border: 1px solid rgb(255 255 255 / 26%);
+    border-radius: 22px;
+    box-shadow: 0 8px 26px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 38%);
+}
+
+:root[data-shape='aero'] .fs-item-card-module-image-container {
+    border-radius: 14px;
+}
+
+/* The stock card is a borderless poster and runs its text edge to edge -
+   fine with no edges, but this shape painted a frame on the card, so the
+   labels sat against (and at the corners, past) the glass. Wide type-pack
+   faces made it look like spilling. Inset the text, generously: a 22px
+   radius eats into the first and last characters otherwise. */
+:root[data-shape='aero'] .fs-item-card-module-detail-container {
+    padding-right: 12px;
+    padding-bottom: 10px;
+    padding-left: 12px;
+}
+
+:root[data-shape='aero'] .fs-item-grid-list-module-item-row {
+    overflow: visible;
+}
+
+/* Page header, filter bar, queue sidebar: glass edges. */
+:root[data-shape='aero'] .fs-page-header-module-container,
+:root[data-shape='aero'] .fs-filter-bar-module-filter-bar {
+    background-image: linear-gradient(180deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 1.5%) 60%);
+    border-bottom: 1px solid rgb(255 255 255 / 26%);
+}
+
+:root[data-shape='aero'] #sidebar-queue {
+    border-left: 1px solid rgb(255 255 255 / 26%);
+}
+
+:root[data-shape='aero'] .fs-sidebar-module-accordion-control,
+:root[data-shape='aero'] .mantine-Accordion-control {
+    border-radius: 999px !important;
+}
+
+/* Settings tabs: capsules, the active one glossed like a nav item. */
+:root[data-shape='aero'] .mantine-Tabs-tab {
+    border-radius: 999px !important;
+}
+
+:root[data-shape='aero'] .mantine-Tabs-tab[data-active] {
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 26%),
+        rgb(255 255 255 / 5%) 50%,
+        rgb(255 255 255 / 12%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 32%) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
+}
+
+/* ---------------------------------------------------------------------
+   Surfaces the first pass missed (2026-09-07).
+   --------------------------------------------------------------------- */
+
+/* The right-click menu (play next, play last, add to playlist) is a Radix
+   context menu, not a Mantine one, so every .mantine-*-dropdown rule above
+   slid past it and it kept the stock border and corners while the rest of
+   the app changed. Same chrome as the dropdowns; one hook covers the
+   submenu too, which renders with the same class. */
+:root[data-shape='aero'] .fs-context-menu-module-content {
+    border: 1px solid rgb(255 255 255 / 30%) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 34px rgb(0 0 0 / 45%) !important;
+}
+
+:root[data-shape='aero'] .fs-context-menu-module-item {
+    border-radius: 999px !important;
+}
+
+/* Playlist rows in the left sidebar. The packs put a frame and a hover
+   block behind these rows, and at the stock padding the text sits hard
+   against it. Two knobs: the vertical padding inside a row, and a hair of
+   space between rows so the frames read as separate. */
+:root[data-shape='aero'] .fs-sidebar-playlist-list-module-row-compact,
+:root[data-shape='aero'] .fs-playlist-folder-tree-module-nav-folder,
+:root[data-shape='aero'] .fs-playlist-folder-tree-module-header {
+    padding-top: var(--theme-spacing-md);
+    padding-bottom: var(--theme-spacing-md);
+    margin-bottom: 2px;
+}
+
+:root[data-shape='aero'] .fs-sidebar-playlist-list-module-row-group {
+    padding-top: var(--theme-spacing-sm);
+    padding-bottom: var(--theme-spacing-sm);
+}
+
+/* Popover dropdowns, the player's playback-style and speed panel among
+   them: the packs draw a heavier border than the stock one, and the
+   dropdown's own sm padding left the labels touching it. */
+:root[data-shape='aero'] .fs-popover-module-dropdown {
+    padding: var(--theme-spacing-md);
+}
+
+/* The hover controls on a playlist row (play, play next, play last) sit in
+   their own panel, and the tooltip above them is a Mantine tooltip: neither
+   is a dropdown, so both kept square corners inside a pack whose whole
+   vocabulary is the capsule. Same rim and gloss as the nav capsules. */
+:root[data-shape='aero'] .fs-sidebar-playlist-list-module-controls,
+:root[data-shape='aero'] .fs-sidebar-playlist-list-module-controls-compact {
+    padding: 3px 6px;
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 26%),
+        rgb(255 255 255 / 5%) 50%,
+        rgb(255 255 255 / 12%)
+    );
+    border: 1px solid rgb(255 255 255 / 32%);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
+}
+
+:root[data-shape='aero'] .mantine-Tooltip-tooltip {
+    border: 1px solid rgb(255 255 255 / 30%);
+    border-radius: 14px !important;
+    box-shadow: 0 12px 34px rgb(0 0 0 / 45%);
+}
+
+/* The hover bar as a whole. The panel was already a capsule after round
+   two, but the three buttons inside it are an ActionIconGroup, and a
+   group is where Mantine flattens its children's corners - so a pill full
+   of square buttons still read as a box. Each button becomes its own
+   capsule with the nav gloss, with air between them, and the panel closes
+   up around them. */
+:root[data-shape='aero'] .fs-item-row-play-controls-module-controls {
+    gap: 4px;
+}
+
+:root[data-shape='aero'] .fs-item-row-play-controls-module-controls .mantine-ActionIcon-root {
+    background-image: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 26%),
+        rgb(255 255 255 / 5%) 50%,
+        rgb(255 255 255 / 12%)
+    ) !important;
+    border: 1px solid rgb(255 255 255 / 32%) !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%);
+}

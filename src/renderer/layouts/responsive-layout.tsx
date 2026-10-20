@@ -1,5 +1,5 @@
 import isElectron from 'is-electron';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useAppTracker } from '/@/renderer/features/analytics/hooks/use-app-tracker';
@@ -15,6 +15,7 @@ import {
     useLayoutHotkeyBindings,
     useSettingsStoreActions,
     useZoomFactor,
+    useZoomPerDisplay,
 } from '/@/renderer/store';
 
 interface ResponsiveLayoutProps {
@@ -48,9 +49,11 @@ const localSettings = isElectron() ? window.api.localSettings : null;
 const LayoutHotkeys = () => {
     const navigate = useNavigate();
     const zoomFactor = useZoomFactor();
+    const zoomPerDisplay = useZoomPerDisplay();
     const { setSettings } = useSettingsStoreActions();
     const bindings = useLayoutHotkeyBindings();
     const { close, open, opened, toggle } = useCommandPaletteState();
+    const isSmallDisplayRef = useRef(false);
 
     const handlers = useMemo(
         () => ({
@@ -71,16 +74,36 @@ const LayoutHotkeys = () => {
                     zoomFactor: newVal,
                 },
             });
-            localSettings?.setZoomFactor(newVal);
+            if (!isSmallDisplayRef.current || !zoomPerDisplay.enabled) {
+                localSettings?.setZoomFactor(newVal);
+            }
         },
-        [setSettings, zoomFactor],
+        [setSettings, zoomFactor, zoomPerDisplay.enabled],
     );
 
     useEffect(() => {
         if (localSettings) {
-            localSettings?.setZoomFactor(zoomFactor);
+            if (isSmallDisplayRef.current && zoomPerDisplay.enabled) {
+                localSettings.setZoomFactor(zoomPerDisplay.zoomFactor);
+            } else {
+                localSettings.setZoomFactor(zoomFactor);
+            }
         }
-    }, [zoomFactor]);
+    }, [zoomFactor, zoomPerDisplay]);
+
+    useEffect(() => {
+        if (!localSettings) return undefined;
+        const cleanup = localSettings.onDisplayChanged((info) => {
+            const isSmall = info.width <= zoomPerDisplay.widthThreshold;
+            isSmallDisplayRef.current = isSmall;
+            if (zoomPerDisplay.enabled && isSmall) {
+                localSettings.setZoomFactor(zoomPerDisplay.zoomFactor);
+            } else {
+                localSettings.setZoomFactor(zoomFactor);
+            }
+        });
+        return cleanup;
+    }, [zoomFactor, zoomPerDisplay]);
 
     const hotkeys = useMemo<HotkeyItem[]>(
         () => [

@@ -2,13 +2,15 @@ import clsx from 'clsx';
 import { AnimatePresence, motion, Variants } from 'motion/react';
 import { lazy, Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import isElectron from 'is-electron';
 
 import styles from './full-screen-player-queue.module.css';
 
 import { Lyrics } from '/@/renderer/features/lyrics/lyrics';
 import { PlayQueue } from '/@/renderer/features/now-playing/components/play-queue';
+import { FullScreenCanvas } from '/@/renderer/features/player/components/full-screen-canvas';
 import { FullScreenSimilarSongs } from '/@/renderer/features/player/components/full-screen-similar-songs';
-import { useListSettings, usePlaybackSettings, useSettingsStore } from '/@/renderer/store';
+import { useCanvasSettings, useListSettings, usePlaybackSettings, useSettingsStore } from '/@/renderer/store';
 import {
     useFullScreenPlayerStore,
     useFullScreenPlayerStoreActions,
@@ -71,6 +73,8 @@ const Controls = () => {
     const { activeTab } = useFullScreenPlayerStore();
     const { setStore } = useFullScreenPlayerStoreActions();
     const { webAudio } = usePlaybackSettings();
+    const canvasServerUrl = useCanvasSettings().serverUrl;
+    const canvasEnabled = canvasServerUrl.trim().length > 0;
 
     const toggleTab = (tab: string) => {
         setStore({ activeTab: activeTab === tab ? '' : tab });
@@ -107,9 +111,26 @@ const Controls = () => {
             });
         }
 
+        // Canvas needs a homelab server to fetch clips from; without one the
+        // tab would only ever say "not configured", so it stays out of the bar.
+        if (canvasEnabled) {
+            items.push({
+                active: activeTab === 'canvas',
+                icon: 'image',
+                label: t('page.fullscreenPlayer.canvas'),
+                onClick: () => toggleTab('canvas'),
+            });
+        }
+
         return items;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab, setStore, t, webAudio]);
+    }, [activeTab, canvasEnabled, setStore, t, webAudio]);
+
+    const handlePopout = () => {
+        if (isElectron()) {
+            window.api.ipc.send('panel-popout');
+        }
+    };
 
     return (
         <Group
@@ -132,6 +153,19 @@ const Controls = () => {
                     ></ActionIcon>
                 </div>
             ))}
+            {isElectron() && (
+                <div>
+                    <ActionIcon
+                        icon="externalLink"
+                        iconProps={{ size: 'lg' }}
+                        onClick={handlePopout}
+                        tooltip={{
+                            label: t('common.popout', { defaultValue: 'Open in new window' }),
+                        }}
+                        variant="subtle"
+                    />
+                </div>
+            )}
         </Group>
     );
 };
@@ -146,7 +180,7 @@ export const FullScreenPlayerQueue = () => {
     const queueContainerClassName = clsx(styles.queueContainer, {
         [styles.queueContainerFadeTopBottom]: !table?.enableHeader,
     });
-    const isPanelOpen = isDesktopPanelOpen(activeTab, webAudio);
+    const isPanelOpen = isDesktopPanelOpen(activeTab, webAudio) || activeTab === 'canvas';
     const isCollapsed = !isPanelOpen;
 
     return (
@@ -209,6 +243,17 @@ export const FullScreenPlayerQueue = () => {
                                 <AudioMotionAnalyzerVisualizer />
                             )}
                         </Suspense>
+                    </motion.div>
+                ) : activeTab === 'canvas' ? (
+                    <motion.div
+                        animate="animate"
+                        className={styles.moduleContent}
+                        exit="exit"
+                        initial="initial"
+                        key="canvas"
+                        variants={moduleContentVariants}
+                    >
+                        <FullScreenCanvas />
                     </motion.div>
                 ) : null}
             </AnimatePresence>

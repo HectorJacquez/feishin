@@ -1,0 +1,141 @@
+/* stylelint-disable selector-class-pattern -- Mantine's own class names are the hooks here */
+
+/*
+  Type packs, verbatim from the site's fonts.css: a SEPARATE axis from
+  shapes, so any font composes with any shape. Terminal is what the classic
+  Retro CRT look bundled; Pixel is Press Start 2P (OFL), real 8-bit
+  letterforms on headings, nav and buttons while body text stays readable.
+  The pixel font's URL is filled in at runtime (see use-app-theme.ts).
+*/
+
+/* ---- Terminal ---- */
+
+/*
+  Face is VT323 per the cross-client alignment (site decision "a");
+  Courier New stays as the fallback. Only the face changed.
+*/
+@font-face {
+    font-family: 'VT323';
+    src: url('__VT323_FONT_URL__') format('truetype');
+    font-display: swap;
+}
+
+:root[data-type='terminal'] h1,
+:root[data-type='terminal'] h2,
+:root[data-type='terminal'] h3,
+:root[data-type='terminal'] .mantine-Title-root {
+    font-family: 'VT323', 'Courier New', ui-monospace, Menlo, monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+:root[data-type='terminal'] h1,
+:root[data-type='terminal'] .mantine-Title-root[data-order='1'] {
+    text-shadow: 3px 3px 0 rgb(0 0 0 / 55%);
+}
+
+:root[data-type='terminal'] .mantine-Button-root,
+:root[data-type='terminal'] .mantine-Select-input,
+:root[data-type='terminal'] .mantine-Tabs-tab,
+:root[data-type='terminal'] .mantine-Accordion-control {
+    font-family: 'VT323', ui-monospace, 'Courier New', monospace;
+}
+
+:root[data-type='terminal'] #sidebar a,
+:root[data-type='terminal'] #sidebar .mantine-NavLink-root {
+    font-family: ui-monospace, 'Courier New', monospace !important;
+    font-size: 12px !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ---- Pixel (Press Start 2P) ---- */
+@font-face {
+    font-family: GBPixel;
+    src: url('__PIXEL_FONT_URL__');
+    font-display: swap;
+}
+
+:root[data-type='pixel'] h1,
+:root[data-type='pixel'] h2,
+:root[data-type='pixel'] h3,
+:root[data-type='pixel'] .mantine-Title-root {
+    font-family: GBPixel, monospace;
+    line-height: 1.6;
+}
+
+:root[data-type='pixel'] h1,
+:root[data-type='pixel'] .mantine-Title-root[data-order='1'] {
+    font-size: 19px;
+}
+
+:root[data-type='pixel'] h2,
+:root[data-type='pixel'] .mantine-Title-root[data-order='2'] {
+    font-size: 14px;
+}
+
+:root[data-type='pixel'] h3,
+:root[data-type='pixel'] .mantine-Title-root[data-order='3'] {
+    font-size: 12px;
+}
+
+:root[data-type='pixel'] .mantine-Button-root,
+:root[data-type='pixel'] .mantine-Select-input,
+:root[data-type='pixel'] .mantine-Tabs-tab,
+:root[data-type='pixel'] .mantine-Accordion-control {
+    font-family: GBPixel, monospace;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+:root[data-type='pixel'] #sidebar a,
+:root[data-type='pixel'] #sidebar .mantine-NavLink-root {
+    font-family: GBPixel, monospace !important;
+    font-size: 9px !important;
+    line-height: 2;
+}
+
+
+/* ---- Typewriter (Courier Prime) ---- */
+
+/*
+  Unlike Terminal this is quiet: real mixed-case typewriter text
+  everywhere, no uppercase transforms or letterspacing tricks. Pairs
+  naturally with Zine's photocopier look, composes with everything.
+*/
+@font-face {
+    font-family: 'Courier Prime';
+    src: url('__COURIER_PRIME_FONT_URL__') format('truetype');
+    font-display: swap;
+}
+
+:root[data-type='typewriter'] body,
+:root[data-type='typewriter'] .mantine-Text-root,
+:root[data-type='typewriter'] .mantine-Title-root,
+:root[data-type='typewriter'] .mantine-Button-root,
+:root[data-type='typewriter'] .mantine-Select-input,
+:root[data-type='typewriter'] .mantine-Tabs-tab,
+:root[data-type='typewriter'] .mantine-Accordion-control {
+    font-family: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+}
+
+/* ---- Rounded (Quicksand) ---- */
+
+/*
+  The soft humanist face for Aero's glass. Whole-app like Typewriter.
+*/
+@font-face {
+    font-family: Quicksand;
+    src: url('__QUICKSAND_FONT_URL__') format('truetype');
+    font-display: swap;
+}
+
+:root[data-type='rounded'] body,
+:root[data-type='rounded'] .mantine-Text-root,
+:root[data-type='rounded'] .mantine-Title-root,
+:root[data-type='rounded'] .mantine-Button-root,
+:root[data-type='rounded'] .mantine-Select-input,
+:root[data-type='rounded'] .mantine-Tabs-tab,
+:root[data-type='rounded'] .mantine-Accordion-control {
+    font-family: Quicksand, 'Trebuchet MS', system-ui, sans-serif;
+}

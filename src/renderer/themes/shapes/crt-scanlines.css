@@ -1,0 +1,15 @@
+/*
+  CRT scanline overlay, verbatim from the site's theme.py _crt_layer()
+  (cashy/shape-styles/crt-scanlines.css). Its own toggle, independent of
+  shape and palette: a fixed pseudo-element on the root, gated by a class,
+  so switching it is one class flip with nothing to reflow. Pure CSS; there
+  is no scanline texture anywhere in the system.
+*/
+html.crt-scan::after {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    pointer-events: none;
+    content: '';
+    background: repeating-linear-gradient(0deg, rgb(0 0 0 / 11%) 0 1px, transparent 1px 3px);
+}

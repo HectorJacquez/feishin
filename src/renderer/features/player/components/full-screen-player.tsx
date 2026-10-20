@@ -310,14 +310,15 @@ const PlayerContainer = memo(
 PlayerContainer.displayName = 'PlayerContainer';
 
 export const FullScreenPlayer = () => {
-    const { activeTab, dynamicBackground, dynamicImageBlur, dynamicIsImage, opacity } =
+    const { activeTab, dynamicBackground, dynamicImageBlur, dynamicIsImage, opacity, visualizerExpanded } =
         useFullScreenPlayerStore();
     const { setStore } = useFullScreenPlayerStoreActions();
     const hasActiveModule =
         activeTab === 'queue' ||
         activeTab === 'related' ||
         activeTab === 'lyrics' ||
-        activeTab === 'visualizer';
+        activeTab === 'visualizer' ||
+        activeTab === 'canvas';
 
     const isRadioActive = useIsRadioActive();
     const { isPlaying: isRadioPlaying } = useRadioPlayer();
@@ -342,19 +343,21 @@ export const FullScreenPlayer = () => {
             dynamicIsImage={dynamicIsImage}
             opacity={opacity}
         >
-            <Group
-                className="full-screen-player-controls-container"
-                gap="sm"
-                p="0.5rem"
-                pos="absolute"
-                style={{
-                    background: `rgb(var(--theme-colors-background-transparent))`,
-                    left: 0,
-                    top: 0,
-                }}
-            >
-                <SharedFullscreenPlayerSettings />
-            </Group>
+            {!visualizerExpanded && (
+                <Group
+                    className="full-screen-player-controls-container"
+                    gap="sm"
+                    p="0.5rem"
+                    pos="absolute"
+                    style={{
+                        background: `rgb(var(--theme-colors-background-transparent))`,
+                        left: 0,
+                        top: 0,
+                    }}
+                >
+                    <SharedFullscreenPlayerSettings />
+                </Group>
+            )}
             <BackgroundImageOverlay
                 dynamicBackground={effectiveDynamicBackground}
                 dynamicImageBlur={dynamicImageBlur}

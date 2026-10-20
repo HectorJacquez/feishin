@@ -91,6 +91,7 @@ export const SidebarPlayQueue = () => {
     const [search, setSearch] = useState<string | undefined>(undefined);
     const location = useLocation();
     const {
+        canvasExpanded: isFullScreenCanvasExpanded,
         expanded: isFullScreenPlayerExpanded,
         visualizerExpanded: isFullScreenVisualizerExpanded,
     } = useFullScreenPlayerStore();
@@ -109,7 +110,11 @@ export const SidebarPlayQueue = () => {
     const shouldAddTopMargin = isElectron() && windowBarStyle === Platform.WEB;
 
     useEffect(() => {
-        if (isFullScreenPlayerExpanded || isFullScreenVisualizerExpanded) {
+        if (
+            isFullScreenPlayerExpanded ||
+            isFullScreenVisualizerExpanded ||
+            isFullScreenCanvasExpanded
+        ) {
             // Immediately hide when fullscreen player opens
             setShouldRender(false);
             return undefined;
@@ -123,7 +128,7 @@ export const SidebarPlayQueue = () => {
                 clearTimeout(timeoutId);
             };
         }
-    }, [isFullScreenPlayerExpanded, isFullScreenVisualizerExpanded]);
+    }, [isFullScreenCanvasExpanded, isFullScreenPlayerExpanded, isFullScreenVisualizerExpanded]);
 
     const [defaultLayout, onLayoutChange] = usePersistence({
         debounce: 300,
